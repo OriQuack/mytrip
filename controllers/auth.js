@@ -6,17 +6,24 @@ exports.postLogin = (req, res, next) => {  // TODO
     if(user) {
         if (user.pasword===password)
         {
-            //로그인 성공
+            //로그인 성공, 세션 부여
         }
         else
             res.status(400).send('wrong password');
         
     }
-    const newUser = {
-        id,
-        password,
-    }
-    //db에 저장
-    res.cookie();
-    res.redirect('/');
+    else {  //register 창 다시 만들시 이거 수정: 지금은 로그인창에 새로운 아이디 입력하면 자동으로 가입됨
+    const newUser = new Users(id,password);
+    newUser.CreateUser()
+    .then(result=> {
+        console.log("new user registered!");
+        res.cookie();
+        res.redirect('/');
+    })
+    .catch(err=> {
+        console.log(err);
+
+    });
+    };
+    
 };
