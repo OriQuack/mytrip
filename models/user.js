@@ -1,14 +1,25 @@
 const getDb = require('../util/database').getDb;
 const mongodb = require('mongodb');
 
-
-
 class User {
     constructor(id,password){
         this.id=id;
         this.password=password;
     }
+    CreateUser(){
+        const db= getDb();
+        if(!this.GetUser(this.id))
+        {
+            console.log("id already exists!");
 
+        }
+        else {
+            db.collection('???')
+            .insertOne(this);
+        }   
+        
+        
+    }
     GetUser(userId) {
         const db= getDb();
         return db.collection('???')
@@ -20,8 +31,9 @@ class User {
         })
         .catch(err=> {
             console.log(err);
-            return false;
         });
     };
 }
+
+
 module.exports = User;
