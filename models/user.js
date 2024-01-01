@@ -20,6 +20,7 @@ class User {
         })
         .catch(err=> {
             console.log(err);
+            return false;
         });
     };
 }
