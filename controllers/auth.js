@@ -1,5 +1,5 @@
 const Users = require('../models/user');
-const bcrypt = require('bycryptjs');
+const bcrypt = require('bcryptjs');
 
 
 exports.postLogin = (req, res, next) => {  // TODO
