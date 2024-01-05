@@ -34,5 +34,5 @@ app.use(
 
 mongoConnect(() => {
     http.createServer(app).listen(3000); // http 서버
-    // https.createServer(options, app).listen(3001); // https 서버
+    https.createServer(options, app).listen(3001); // https 서버
 });
