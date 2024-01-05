@@ -4,11 +4,12 @@ const bcrypt = require('bcryptjs');
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    
-    // model의 getUserByEmail함수로 email에 대응하는 유저 반환
-    const user = Users.getUserByEmail(email); 
 
-    if (user) {
+    Users.getUserByEmail(email).then((user) => {
+        if (!user) {
+            // TODO: send "Invalid email or password" error
+            return res.redirect('/login');
+        }
         // email에 대응하는 유저 존재
         bcrypt
             .compare(password, user.password)
@@ -20,18 +21,15 @@ exports.postLogin = (req, res, next) => {
                         console.log(err);
                         res.redirect('/');
                     });
-                    return res.redirect('/');
                 }
+                // TODO: send "Invalid email or password" error
                 res.redirect('/login');
             })
             .catch((err) => {
                 console.log(err);
                 return res.redirect('/login');
             });
-    } else {
-        // register 창 다시 만들시 이거 수정: 지금은 로그인창에 새로운 아이디 입력하면 자동으로 가입됨
-        return res.redirect('/login');
-    }
+    });
 };
 exports.postSignup = (req, res, next) => {
     const username = req.body.username;
