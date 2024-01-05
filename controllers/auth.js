@@ -38,7 +38,7 @@ exports.postSignup = (req, res, next) => {
     const confirmPassword = req.body.confirmPassword;
     if (password !== confirmPassword) {
         // TODO: Send "password does not match" error
-        console.log('password does not match')
+        console.log('password does not match');
         return res.redirect('/signup');
     }
     Users.getUserByEmail(email)
@@ -46,7 +46,7 @@ exports.postSignup = (req, res, next) => {
             if (userDoc) {
                 // 해당 email을 가진 유저가 이미 존재
                 // TODO: Send "user already exists" error
-                console.log('user already exists')
+                console.log('user already exists');
                 return res.redirect('/signup');
             }
             return bcrypt
