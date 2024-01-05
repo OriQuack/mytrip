@@ -4,7 +4,7 @@ const MongoClient = mongodb.MongoClient;
 
 let db;
 const MONGODB_URI =
-    'mongodb+srv://admin:***REMOVED***@mytrip.e0j3pi1.mongodb.net/?retryWrites=true&w=majority';
+    'mongodb+srv://admin:***REMOVED***@mytrip.e0j3pi1.mongodb.net/mytrip';
 
 const mongoConnect = (callback) => {
     MongoClient.connect(MONGODB_URI)
