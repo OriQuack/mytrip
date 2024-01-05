@@ -2,11 +2,11 @@ const Users = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 exports.postLogin = (req, res, next) => {
-    // TODO
     const email = req.body.email;
     const password = req.body.password;
-
-    const user = Users.getUserByEmail(email); // model의 getuser함수로 email에 대응하는 유저 반환
+    
+    // model의 getUserByEmail함수로 email에 대응하는 유저 반환
+    const user = Users.getUserByEmail(email); 
 
     if (user) {
         // email에 대응하는 유저 존재
@@ -38,6 +38,10 @@ exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
+    if (password !== confirmPassword) {
+        // TODO: Send some error
+        return res.redirect('/signup');
+    }
     Users.getUserByEmail(email)
         .then((userDoc) => {
             if (userDoc) {
@@ -53,9 +57,13 @@ exports.postSignup = (req, res, next) => {
                         email: email,
                         password: hashedPassword,
                     });
+                    return user.save();
                 })
                 .then((result) => {
                     res.redirect('/login');
+                })
+                .catch((err) => {
+                    console.log(err);
                 });
         })
         .catch((err) => {
