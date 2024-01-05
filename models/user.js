@@ -3,7 +3,7 @@ const mongodb = require('mongodb');
 
 class User {
     constructor(username, email, password) {
-        this.name = username;
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -24,7 +24,6 @@ class User {
         return db
             .collection('users')
             .findOne({ _id: new mongodb.ObjectId(userId) })
-            .next()
             .then((user) => {
                 console.log(user);
                 return user;

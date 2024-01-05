@@ -34,6 +34,7 @@ exports.postLogin = (req, res, next) => {
     }
 };
 exports.postSignup = (req, res, next) => {
+    const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
@@ -41,13 +42,15 @@ exports.postSignup = (req, res, next) => {
         .then((userDoc) => {
             if (userDoc) {
                 // 해당 email을 가진 유저가 이미 존재
+                // TODO: Send some error
                 return res.redirect('/signup');
             }
             return bcrypt
                 .hash(password, 12)
                 .then((hashedPassword) => {
                     const user = new Users({
-                        id: email,
+                        username: username,
+                        email: email,
                         password: hashedPassword,
                     });
                 })
