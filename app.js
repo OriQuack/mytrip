@@ -10,7 +10,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 
 const app = express();
 const store = new MongoDBStore({
-    uri: 'mongodb+srv://admin:XjeD9tG6brrwden3@mytrip.e0j3pi1.mongodb.net/?retryWrites=true&w=majority',
+    uri: 'mongodb+srv://admin:XjeD9tG6brrwden3@mytrip.e0j3pi1.mongodb.net/mytrip',
     collection: 'sessions',
 });
 
