@@ -9,11 +9,9 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 
 const app = express();
 const store = new MongoDBStore({
-    uri:'mongodb+srv://admin:XjeD9tG6brrwden3@mytrip.e0j3pi1.mongodb.net/?retryWrites=true&w=majority',
-    collection: 'sessions'
-    
+    uri: 'mongodb+srv://admin:XjeD9tG6brrwden3@mytrip.e0j3pi1.mongodb.net/?retryWrites=true&w=majority',
+    collection: 'sessions',
 });
-
 
 const options = require('./config/key_config').options;
 const authRoutes = require('./routes/auth');
@@ -28,7 +26,7 @@ app.use(
         secret: 'key key key',
         resave: false,
         saveUninitialized: false,
-        store: store
+        store: store,
     })
 );
 
