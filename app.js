@@ -20,6 +20,7 @@ const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(authRoutes);
 app.use(planRoutes);
 
