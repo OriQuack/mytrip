@@ -3,12 +3,13 @@ const bcrypt = require('bcryptjs');
 
 exports.postLogin = (req, res, next) => {
     // TODO
-    const { id, password } = req.body;
+    const email = req.body.email;
+    const password = req.body.password;
 
-    const user = Users.GetUser(id); //model의 getuser함수로 id에 대응하는 유저 반환
+    const user = Users.GetUser(email); // model의 getuser함수로 email에 대응하는 유저 반환
 
     if (user) {
-        //id에 대응하는 유저 존재재
+        // email에 대응하는 유저 존재
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {
@@ -28,24 +29,25 @@ exports.postLogin = (req, res, next) => {
                 return res.redirect('/login');
             });
     } else {
-        //register 창 다시 만들시 이거 수정: 지금은 로그인창에 새로운 아이디 입력하면 자동으로 가입됨
+        // register 창 다시 만들시 이거 수정: 지금은 로그인창에 새로운 아이디 입력하면 자동으로 가입됨
         return res.redirect('/login');
     }
 };
 exports.postSignup = (req, res, next) => {
-    const id = req.body.email;
+    const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    Users.GetUser({ id: id, password: password })
+    Users.GetUser({ email: email })
         .then((userDoc) => {
             if (userDoc) {
+                // 해당 email을 가진 유저가 이미 존재
                 return res.redirect('/signup');
             }
             return bcrypt
                 .hash(password, 12)
                 .then((hashedPassword) => {
                     const user = new Users({
-                        id: id,
+                        id: email,
                         password: hashedPassword,
                     });
                 })
