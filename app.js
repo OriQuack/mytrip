@@ -4,6 +4,7 @@ const http = require('http');
 const https = require('https');
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoConnect = require('./util/database').mongoConnect;
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
@@ -31,8 +32,7 @@ app.use(
     })
 );
 
-const httpServer = http.createServer(app); // http 서버
-const httpsServer = https.createServer(options, app); // https 서버
-
-httpServer.listen(3000);
-httpsServer.listen(3001);
+mongoConnect(() => {
+    http.createServer(app).listen(3000); // http 서버
+    https.createServer(options, app).listen(3001); // https 서버
+});
