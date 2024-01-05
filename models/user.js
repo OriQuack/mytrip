@@ -6,15 +6,15 @@ class User {
         this.id = id;
         this.password = password;
     }
-    CreateUser() {
+    createUser() {
         const db = getDb();
-        if (!this.GetUser(this.id)) {
+        if (!this.getUser(this.id)) {
             console.log('id already exists!');
         } else {
             db.collection('???').insertOne(this);
         }
     }
-    GetUser(userId) {
+    getUser(userId) {
         const db = getDb();
         return db
             .collection('???')
