@@ -6,7 +6,7 @@ exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const user = Users.GetUser(email); // model의 getuser함수로 email에 대응하는 유저 반환
+    const user = Users.getUser(email); // model의 getuser함수로 email에 대응하는 유저 반환
 
     if (user) {
         // email에 대응하는 유저 존재
@@ -37,7 +37,7 @@ exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    Users.GetUser({ email: email })
+    Users.getUser({ email: email })
         .then((userDoc) => {
             if (userDoc) {
                 // 해당 email을 가진 유저가 이미 존재
