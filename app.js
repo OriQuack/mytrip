@@ -14,6 +14,7 @@ const store = new MongoDBStore({
 });
 
 const options = require('./config/key_config').options;
+
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 
