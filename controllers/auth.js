@@ -11,18 +11,21 @@ exports.postLogin = (req, res, next) => {
             return res.redirect('/login');
         }
         // email에 대응하는 유저 존재
+        
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {
                 if (doMatch) {
                     req.session.isLoggedIn = true;
                     req.session.user = user;
+                    console.log('session init complete');
                     return req.session.save((err) => {
                         console.log(err);
                         res.redirect('/');
                     });
                 }
                 // TODO: send "Invalid email or password" error
+                console.log('Invalid email or password');
                 res.redirect('/login');
             })
             .catch((err) => {
@@ -56,6 +59,7 @@ exports.postSignup = (req, res, next) => {
                     return user.save();
                 })
                 .then((result) => {
+                    console.log('signup complete!');
                     res.redirect('/login');
                 })
                 .catch((err) => {
