@@ -27,7 +27,7 @@ app.use(planRoutes);
 
 app.use(
     session({
-        secret: 'key key key',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         store: store,
