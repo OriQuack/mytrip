@@ -11,7 +11,7 @@ exports.postLogin = (req, res, next) => {
             return res.redirect('/login');
         }
         // email에 대응하는 유저 존재
-        
+
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {
@@ -34,6 +34,14 @@ exports.postLogin = (req, res, next) => {
             });
     });
 };
+
+exports.postLogout = (req, res, next) => {
+    req.session.destroy((err) => {
+        console.log(err);
+        res.redirect('/');
+    });
+};
+
 exports.postSignup = (req, res, next) => {
     const username = req.body.username;
     const email = req.body.email;
