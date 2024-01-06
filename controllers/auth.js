@@ -11,7 +11,6 @@ exports.postLogin = (req, res, next) => {
             return res.redirect('/login');
         }
         // email에 대응하는 유저 존재
-
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {

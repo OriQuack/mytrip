@@ -38,6 +38,7 @@ app.use((req, res, next) => {
         return next();
     }
     User.getUserByEmail(req.session.user.email)
+    // session for current user exists
         .then((user) => {
             req.user = user;
             next();
