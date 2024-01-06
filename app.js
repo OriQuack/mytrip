@@ -1,4 +1,5 @@
 const path = require('path');
+const dotenv = require('dotenv').config();
 
 const http = require('http');
 const https = require('https');
@@ -10,7 +11,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 
 const app = express();
 const store = new MongoDBStore({
-    uri: 'mongodb+srv://admin:XjeD9tG6brrwden3@mytrip.e0j3pi1.mongodb.net/mytrip',
+    uri: process.env.DB_URI,
     collection: 'sessions',
 });
 
@@ -34,6 +35,6 @@ app.use(
 );
 
 mongoConnect(() => {
-    http.createServer(app).listen(3000); // http 서버
-    https.createServer(options, app).listen(3001); // https 서버
+    http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
+    https.createServer(options, app).listen(process.env.HTTPS_PORT); // https 서버
 });
