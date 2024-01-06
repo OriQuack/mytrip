@@ -19,12 +19,6 @@ const options = require('./config/key_config').options;
 
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(authRoutes);
-app.use(planRoutes);
-
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -33,6 +27,12 @@ app.use(
         store: store,
     })
 );
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(authRoutes);
+app.use(planRoutes);
+
 
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
