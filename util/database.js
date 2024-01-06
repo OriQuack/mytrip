@@ -3,8 +3,7 @@ const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 
 let db;
-const MONGODB_URI =
-    'mongodb+srv://admin:***REMOVED***@mytrip.e0j3pi1.mongodb.net/mytrip';
+const MONGODB_URI = process.env.DB_URI;
 
 const mongoConnect = (callback) => {
     MongoClient.connect(MONGODB_URI)
