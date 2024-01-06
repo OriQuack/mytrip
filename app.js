@@ -21,6 +21,8 @@ const options = require('./config/key_config').options;
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -30,8 +32,24 @@ app.use(
     })
 );
 app.use(csrfProtection);
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.json());
+
+app.use((req, res, next) => {
+    if (!req.session.user) {
+        return next();
+    }
+    User.getUserByEmail(req.session.user.email)
+        .then((user) => {
+            req.user = user;
+            next();
+        })
+        .catch((err) => console.log(err));
+});
+
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 
 app.use(authRoutes);
 app.use(planRoutes);
