@@ -44,6 +44,18 @@ class User {
                 console.log(err);
             });
     }
+    static getUserByUsername(name) {
+        const db = getDb();
+        return db
+            .collection('users')
+            .findOne({ username: name })
+            .then((user) => {
+                return user;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 }
 
 module.exports = User;

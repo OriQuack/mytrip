@@ -1,11 +1,23 @@
 const Users = require('../models/user');
 const bcrypt = require('bcryptjs');
 
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log("Invalid Email.");
+        return res.redirect('/login');
+        // return res.status(422).render('auth/login', {
+        //     path: '/login',
+        //     pageTitle: 'login',
+        //     errorMessage: errors.array()[0].msg
+        //     oldInput: {email: email, password: password } //Keep user data
+        // });
+    }
 
     Users.getUserByEmail(email).then((user) => {
         if (!user) {
@@ -49,43 +61,32 @@ exports.postSignup = (req, res, next) => {
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
     const errors = validationResult(req);
-    if (!errors.isEmpty()) { //Invalid email
+
+    //Check the validation result
+    if (!errors.isEmpty()) {//Invalid email
+        console.log("Invalid signup information");
         console.log(errors.array());
+        return res.redirect('/signup');
         // return res.status(422).render('auth/signup', {
         //     path: '/signup',
         //     pageTitle: 'Signup',
-        //     errorMessage: errors.array()
+        //     errorMessage: errors.array()[0].msg
+        //     oldInput: {username: username, email: email, password: password, confirmPassword: confirmPassword}
         // });
     }
 
-    if (password !== confirmPassword) {
-        // TODO: Send "password does not match" error
-        console.log('password does not match');
-        return res.redirect('/signup');
-    }
-    Users.getUserByEmail(email)
-        .then((userDoc) => {
-            if (userDoc) {
-                // 해당 email을 가진 유저가 이미 존재
-                // TODO: Send "user already exists" error
-                console.log('user already exists');
-                return res.redirect('/signup');
-            }
-            return bcrypt
-                .hash(password, 12)
-                .then((hashedPassword) => {
-                    const user = new Users(username, email, hashedPassword);
-                    return user.save();
-                })
-                .then((result) => {
-                    console.log('signup complete!');
-                    res.redirect('/login');
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+    bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+            const user = new Users(username, email, hashedPassword);
+            return user.save();
+        })
+        .then((result) => {
+            console.log('signup complete!');
+            res.redirect('/login');
         })
         .catch((err) => {
             console.log(err);
-        });
+
+        })
 };
