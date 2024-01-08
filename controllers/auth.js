@@ -1,6 +1,8 @@
 const Users = require('../models/user');
 const bcrypt = require('bcryptjs');
 
+const { validationResult } = require('express-validator/check');
+
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -46,6 +48,16 @@ exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) { //Invalid email
+        console.log(errors.array());
+        // return res.status(422).render('auth/signup', {
+        //     path: '/signup',
+        //     pageTitle: 'Signup',
+        //     errorMessage: errors.array()
+        // });
+    }
+
     if (password !== confirmPassword) {
         // TODO: Send "password does not match" error
         console.log('password does not match');
