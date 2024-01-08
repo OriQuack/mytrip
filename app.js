@@ -19,7 +19,7 @@ const store = new MongoDBStore({
 });
 const csrfProtection = csrf();
 
-const options = require('./config/key_config').options;
+// const options = require('./config/key_config').options;
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 
@@ -53,5 +53,5 @@ app.use(planRoutes);
 
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
-    https.createServer(options, app).listen(process.env.HTTPS_PORT); // https 서버
+    // https.createServer(options, app).listen(process.env.HTTPS_PORT); // https 서버
 });
