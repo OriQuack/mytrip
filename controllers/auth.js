@@ -22,6 +22,7 @@ exports.postLogin = (req, res, next) => {
     Users.getUserByEmail(email).then((user) => {
         if (!user) {
             // TODO: send "Invalid email or password" error
+            console.log("Email doesn't match with any users");
             return res.redirect('/login');
         }
         // email에 대응하는 유저 존재

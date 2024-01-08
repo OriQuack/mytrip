@@ -10,14 +10,11 @@ const router = express.Router();
 
 // router.get('/signup', authController.getSignup);
 
-router.post('/login', [
-    body('email').isEmail().withMessage('Please enter a valid email.')
-], authController.postLogin);
+router.post('/login', body('email').isEmail().withMessage('Please enter a valid email.').normalizeEmail(), authController.postLogin);
 
 router.post('/logout', authController.postLogout);
 
-router.post(
-    '/signup',
+router.post('/signup',
     [
         body('username').custom((value, { req }) => {
             return User.getUserByUsername(value)
@@ -42,19 +39,23 @@ router.post(
                             return Promise.reject('E-mail exists already, please pick a different one.');
                         }
                     })
-            }),
+            })
+            .normalizeEmail(),
         body('password', 'Please enter a valid password.')
             .isLength({ min: 5 })
             .matches(/\d/)
             .matches(/[A-Z]/)
             .matches(/[!@#$%^&*(),.?":{}|<>]/)
-            .matches(/[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/),
-        body('confirmPassword').custom((value, { req }) => {
-            if (value !== req.body.password) {
-                throw new Error('Passwords does not match.');
-            }
-            return true;
-        })
+            .matches(/[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]/)
+            .trim(),
+        body('confirmPassword')
+            .trim()
+            .custom((value, { req }) => {
+                if (value !== req.body.password) {
+                    throw new Error('Passwords does not match.');
+                }
+                return true;
+            })
     ],
     authController.postSignup);
 
