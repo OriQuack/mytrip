@@ -2,10 +2,12 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class User {
-    constructor(username, email, password) {
+    constructor(username, email, password,resetToken,resetTokenExpiration) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.resetToken=resetToken;
+        this.resetTokenExpiration=resetTokenExpiration;
     }
     save() {
         const db = getDb();
@@ -18,6 +20,11 @@ class User {
         } else {
             db.collection('users').insertOne(this);
         }
+    }
+    static deleteUser(userId) {
+        const db= getDb();
+        return db.collection('users').
+        deleteOne({_id : new mongodb.ObjectId(userId)});
     }
     static getUserById(userId) {
         const db = getDb();

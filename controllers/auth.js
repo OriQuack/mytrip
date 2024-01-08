@@ -92,14 +92,19 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
         .then(user=> {
             if(!user){
                 req.flash('error','No account with the email');
-                return res.redirect('/re set');
+                return res.redirect('/reset');
             }
             
             const resetUser = new User(user.username,user.email,user.password,token,Date.now()+3600000);
-           
+            
             console.log(resetUser);
+
            //TO DO:  기존 유저 삭제 해야댐
-            return resetUser.save();
+            resetUser.save();
+            return user;
+        })
+        .then(user=> {
+            User.deleteUser(user._id);
         })
         .then(result=> {
             //check
