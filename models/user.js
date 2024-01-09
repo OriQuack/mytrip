@@ -26,6 +26,18 @@ class User {
         return db.collection('users').
         deleteOne({_id : new mongodb.ObjectId(userId)});
     }
+    static updateUserToken(userId,resetToken,resetTokenExpiration) {
+        const db= getDb();
+        
+        
+        return db.collection('users').
+        updateOne({_id: new mongodb.ObjectId(userId)}, {$set: {
+            "resetToken": resetToken,
+            "resetTokenExpiration": resetTokenExpiration,
+
+          }} )
+          
+    }
     static getUserById(userId) {
         const db = getDb();
         return db
