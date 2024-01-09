@@ -2,6 +2,15 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { reset } = require('nodemon');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+//전송 생성 메서드 호출
+const transporter = nodemailer.createTransport(sendgridTransport({
+    auth: {
+        api_key: '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'
+    }
+}));
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -94,26 +103,36 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
                 req.flash('error','No account with the email');
                 return res.redirect('/reset');
             }
-            
-            const resetUser = new User(user.username,user.email,user.password,token,Date.now()+3600000);
-            
-            console.log(resetUser);
-
-           //TO DO:  기존 유저 삭제 해야댐
-            resetUser.save();
+            user.resetToken = token;
+            user.resetTokenExpriation=Date.now()+3600000;
+            //const resetUser = new User(user.username,user.email,user.password,token,Date.now()+3600000);
+            //console.log(resetUser);
+            //resetUser.save();
             return user;
         })
         .then(user=> {
-            User.deleteUser(user._id);
+           // User.deleteUser(user._id);
+           User.updateUserToken(user._id,user.resetToken,user.resetTokenExpriation);
+           console.log('update success!');
+           return user;
         })
-        .then(result=> {
+        .then(user=> {
             //check
             //send email
              //TO DO:  이메일 전송 해야됨
-            console.log('success!');
-            return   User.getUserByEmail(req.body.eail);
-        })
-        .then(result => console.log(result)) 
+            
+            
+            transporter.sendMail({
+                to: user.email,
+                from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
+                subject: 'Password reset',
+                html: `
+                    <p>You requested a password reset</p>
+                    <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+                    `   
+            });
+           console.log('email send complete!');
+        }) 
         .catch(err=> {
             console.log(err);
         });
