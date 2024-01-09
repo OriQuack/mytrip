@@ -8,7 +8,7 @@ const sendgridTransport = require('nodemailer-sendgrid-transport');
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
-        api_key: '***REMOVED***'
+        api_key: process.env.email_api_key
     }
 }));
 exports.postLogin = (req, res, next) => {
