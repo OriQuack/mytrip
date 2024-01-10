@@ -9,10 +9,12 @@ const mongoConnect = require('./util/database').mongoConnect;
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const cors = require('cors');
 
 const User = require('./models/user');
 
 const app = express();
+// app.use(cors({ origin: 'https://mytripping.vercel.app/' }));  // 프론트 주소 접근만 허용
 const store = new MongoDBStore({
     uri: process.env.DB_URI,
     collection: 'sessions',
@@ -40,7 +42,7 @@ app.use((req, res, next) => {
         return next();
     }
     User.getUserByEmail(req.session.user.email)
-    // session for current user exists
+        // session for current user exists
         .then((user) => {
             req.user = user;
             next();
