@@ -14,12 +14,20 @@ const cors = require('cors');
 const User = require('./models/user');
 
 const app = express();
-// app.use(cors({ origin: 'https://mytripping.vercel.app/' }));  // 프론트 주소 접근만 허용
+app.use(
+    cors({
+        // 특정 주소 접근 허용
+        origin: [
+            'https://mytripping.vercel.app/', //
+            'http://localhost:3000',
+        ],
+    })
+);
 const store = new MongoDBStore({
     uri: process.env.DB_URI,
     collection: 'sessions',
 });
-const csrfProtection = csrf();
+// const csrfProtection = csrf();
 
 // const options = require('./config/key_config').options;
 const authRoutes = require('./routes/auth');
