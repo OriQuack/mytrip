@@ -28,8 +28,6 @@ class User {
     }
     static updateUserToken(userId,resetToken,resetTokenExpiration) {
         const db= getDb();
-        
-        
         return db.collection('users').
         updateOne({_id: new mongodb.ObjectId(userId)}, {$set: {
             "resetToken": resetToken,
@@ -37,6 +35,15 @@ class User {
 
           }} )
           
+    }
+    static updatePassword(userId,hashedPassword){
+        const db= getDb();
+        return db.collection('users').
+        updateOne({_id: new mongodb.ObjectId(userId)}, {$set: {
+            "password": hashedPassword,
+            "resetToken" : undefined,
+            "resetTokenExpriation": undefined,
+        }})
     }
     static getUserById(userId) {
         const db = getDb();
@@ -62,6 +69,21 @@ class User {
             .catch((err) => {
                 console.log(err);
             });
+    }
+    static getUserByToken(userToken) {
+        const db = getDb();
+        console.log(userToken);
+        var token = userToken.resetToken;
+        return db
+        .collection('users')
+        .findOne({resetToken : token,resetTokenExpiration: {$gt:Date.now()}})
+        .then((user)=> {
+            console.log(user);
+            return user;
+        })
+        .catch(err=> {
+            console.log(err);
+        })
     }
 }
 

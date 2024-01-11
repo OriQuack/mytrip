@@ -141,37 +141,38 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
 
 exports.getNewPassword = (req,res,next)=> {
     const token= req.params.token;
-    User.findOne({resetToken: token,resetTokenExpriation: {$gt: Data.now()}}) 
+    console.log(token);
+    User.getUserByToken({resetToken: token}) 
     .then(user=> {
-        //get 
+        //console.log(user);
+        if(user){    
+            console.log("token valid!");
+            res.send({    //new-password page 전송하는데 userId,token을 담아서 보내야됨
+                userId :user._id.toString(),
+                passwordToken:token
+                });
+        }
+        else
+            console.log("invalid access!");
     })
     .catch(err=> {
         console.log(err);
     })
 }
 
-exports.postNewPassword = (req,res,next)=> {
-    const id = req.body.id;
+exports.postNewPassword = (req,res,next)=> {  //위에서 받은 token,userId로 유저 검사
+    //const username = req.body.username;
     const newPassword = req.body.password;
     const passwordToken = req.body.passwordToken;
-    let resetUser;
+    resetUser = new User();
 
-    User.findOne({
-        resetToken:password, 
-        resetTokenExpriation:{$gt: Date.now()},
-        _id:id
-    })
+    User.getUserByToken({resetToken:passwordToken})
     .then(user=> {
-        resetUser = user;
-        return bcrypt.hash(newPassword,12);
+        if(user)
+            return bcrypt.hash(newPassword,12);
     })
     .then(hashedPassword=> {
-        resetUser.password = hashedPassword;
-        resetUser.resetToken=undefined;
-        resetUser.resetTokenExpriation=undefined;
-        return resetUser.save();
-    })
-    .then(result=> {
+        User.updatePassword(req.body.userId,hashedPassword);
         res.redirect('/login');
     })
     .catch(err=> {
