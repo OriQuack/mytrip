@@ -9,27 +9,18 @@ const mongoConnect = require('./util/database').mongoConnect;
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
-const cors = require('cors');
 
 const User = require('./models/user');
 
 const app = express();
-app.use(
-    cors({
-        // 특정 주소 접근 허용
-        origin: [
-            'https://mytripping.vercel.app/', //
-            'http://localhost:3000',
-        ],
-    })
-);
 const store = new MongoDBStore({
     uri: process.env.DB_URI,
     collection: 'sessions',
 });
 // const csrfProtection = csrf();
 
-// const options = require('./config/key_config').options;
+// const httpsOptions = require('./config/key_config').options;
+const corsOptions = require('./config/cors_config').options;
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 
@@ -44,6 +35,7 @@ app.use(
     })
 );
 // app.use(csrfProtection);
+app.use(corsOptions);
 
 app.use((req, res, next) => {
     if (!req.session.user) {
@@ -63,5 +55,5 @@ app.use(planRoutes);
 
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
-    // https.createServer(options, app).listen(process.env.HTTPS_PORT); // https 서버
+    // https.createServer(httpsOptions, app).listen(process.env.HTTPS_PORT); // https 서버
 });
