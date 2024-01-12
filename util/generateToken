@@ -1,25 +1,17 @@
-const { access } = require('fs');
 const jwt = require('jsonwebtoken');
 
-const genAccessToken = (user) => {
-    const payload = { userEmail: user.email };
-    const accessToken = jwt
-        .sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: '15m',
-        })
-        .then((token) => {
-            return token;
-        });
+const genAccessToken = (email) => {
+    const payload = { userEmail: email };
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '15m',
+    });
 };
 
-const genRefreshToken = (user) => {
-    const refreshToken = jwt
-        .sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-            expiresIn: '3d',
-        })
-        .then((token) => {
-            return token;
-        });
+const genRefreshToken = (email) => {
+    const payload = { userEmail: email };
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: '3d',
+    });
 };
 
 exports.genAccessToken = genAccessToken;

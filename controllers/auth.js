@@ -1,4 +1,5 @@
 const Users = require('../models/user');
+const generateToken = require('../util/generateToken');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -14,20 +15,8 @@ exports.postLogin = (req, res, next) => {
             .compare(password, user.password)
             .then((doMatch) => {
                 if (doMatch) {
-                    const accessToken = jwt.sign(
-                        { userEmail: email },
-                        process.env.ACCESS_TOKEN_SECRET,
-                        {
-                            expiresIn: '15m',
-                        }
-                    );
-                    const refreshToken = jwt.sign(
-                        { userEmail: email },
-                        process.env.REFRESH_TOKEN_SECRET,
-                        {
-                            expiresIn: '1d',
-                        }
-                    );
+                    const accessToken = generateToken.genAccessToken(email);
+                    const refreshToken = generateToken.genRefreshToken(email);
                     return res
                         .status(200)
                         .cookie('refreshToken', refreshToken, {
@@ -57,6 +46,8 @@ exports.postSignup = (req, res, next) => {
             return user.save();
         })
         .then((result) => {
+            const accessToken = generateToken.genAccessToken(email);
+            const refreshToken = generateToken.genRefreshToken(email);
             return res
                 .status(200)
                 .cookie('refreshToken', refreshToken, {
