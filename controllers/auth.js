@@ -18,14 +18,14 @@ exports.postLogin = (req, res, next) => {
                 if (doMatch) {
                     const accessToken = jwt.sign(
                         { userEmail: email },
-                        process.env.TOEKN_SECRET,
+                        process.env.TOKEN_SECRET,
                         {
                             expiresIn: '15m',
                         }
                     );
                     const refreshToken = jwt.sign(
                         { userEmail: email },
-                        process.env.TOEKN_SECRET,
+                        process.env.TOKEN_SECRET,
                         {
                             expiresIn: '1d',
                         }
