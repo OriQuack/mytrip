@@ -8,7 +8,10 @@ const authenticate = (req, res, next) => {
         return res.status(401).json({ message: 'Authentication required.' });
     }
     try {
-        const decoded = jwt.verify(accessToken, process.env.TOKEN_SECRET);
+        const decoded = jwt.verify(
+            accessToken,
+            process.env.ACCESS_TOKEN_SECRET
+        );
         User.getUserByEmail(decoded.userEmail).then((user) => {
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
@@ -32,8 +35,9 @@ const authenticate = (req, res, next) => {
             );
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
-            }).header('Authorization', accessToken);
-            next();
+            })
+                .header('Authorization', accessToken)
+                .json({ message: 'Refreshed access token' });
         } catch (err) {}
         res.status(401).json({ message: 'Invalid token' });
     }
