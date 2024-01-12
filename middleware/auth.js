@@ -6,7 +6,6 @@ const authenticate = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ message: 'Authentication required.' });
     }
-
     try {
         const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
         User.getUserByEmail(decoded.userEmail).then((user) => {
