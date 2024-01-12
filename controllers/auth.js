@@ -2,8 +2,6 @@ const Users = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { validationResult } = require('express-validator');
-
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -18,14 +16,14 @@ exports.postLogin = (req, res, next) => {
                 if (doMatch) {
                     const accessToken = jwt.sign(
                         { userEmail: email },
-                        process.env.TOKEN_SECRET,
+                        process.env.ACCESS_TOKEN_SECRET,
                         {
                             expiresIn: '15m',
                         }
                     );
                     const refreshToken = jwt.sign(
                         { userEmail: email },
-                        process.env.TOKEN_SECRET,
+                        process.env.REFRESH_TOKEN_SECRET,
                         {
                             expiresIn: '1d',
                         }
