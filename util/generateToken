@@ -3,18 +3,24 @@ const jwt = require('jsonwebtoken');
 
 const genAccessToken = (user) => {
     const payload = { userEmail: user.email };
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '15m',
-    });
-    return accessToken;
+    const accessToken = jwt
+        .sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: '15m',
+        })
+        .then((token) => {
+            return token;
+        });
 };
 
 const genRefreshToken = (user) => {
-    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: '3d',
-    });
-    return refreshToken;
-}
+    const refreshToken = jwt
+        .sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+            expiresIn: '3d',
+        })
+        .then((token) => {
+            return token;
+        });
+};
 
 exports.genAccessToken = genAccessToken;
 exports.genRefreshToken = genRefreshToken;
