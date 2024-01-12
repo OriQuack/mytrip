@@ -11,27 +11,28 @@ class User {
         const db = getDb();
         return db.collection('users').insertOne(this);
     }
-    createUser() {
-        const db = getDb();
-        if (!this.getUser(this.id)) {
-            console.log('id already exists!');
-        } else {
-            db.collection('users').insertOne(this);
-        }
-    }
-    static getUserById(userId) {
-        const db = getDb();
-        return db
-            .collection('users')
-            .findOne({ _id: new mongodb.ObjectId(userId) })
-            .then((user) => {
-                console.log(user);
-                return user;
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
+    // 안쓰는데 지워도 되나??
+    // createUser() {
+    //     const db = getDb();
+    //     if (!this.getUser(this.id)) {
+    //         console.log('id already exists!');
+    //     } else {
+    //         db.collection('users').insertOne(this);
+    //     }
+    // }
+    // static getUserById(userId) {
+    //     const db = getDb();
+    //     return db
+    //         .collection('users')
+    //         .findOne({ _id: new mongodb.ObjectId(userId) })
+    //         .then((user) => {
+    //             console.log(user);
+    //             return user;
+    //         })
+    //         .catch((err) => {
+    //             console.log(err);
+    //         });
+    // }
     static getUserByEmail(userEmail) {
         const db = getDb();
         return db
