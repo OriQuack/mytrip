@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/refresh', (req, res) => {
     const refreshToken = req.cookies['refreshToken'];
     if (!refreshToken) {
-        return res.status(401).json({ message: 'Authentication required' });
+        return res.status(403).json({ message: 'Authentication required' });
     }
     try {
         const decoded = jwt.verify(
@@ -17,14 +17,14 @@ router.post('/refresh', (req, res) => {
             { userEmail: decoded.userEmail },
             process.env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: '15m',
+                expiresIn: '30m',
             }
         );
-        res.status(200)
+        res.status(403)
             .header('Authorization', accessToken)
-            .json({ message: 'Issued access token' });
+            .json({ message: 'Renewed expired access token' });
     } catch (error) {
-        return res.status(400).send('Invalid refresh token.');
+        return res.status(403).send('Invalid refresh token.');
     }
 });
 

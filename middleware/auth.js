@@ -5,7 +5,7 @@ const authenticate = (req, res, next) => {
     const accessToken = req.headers['authorization'];
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken && !refreshToken) {
-        return res.status(401).json({ message: 'Authentication required.' });
+        return res.status(403).json({ message: 'Authentication required' });
     }
     try {
         const decoded = jwt.verify(
@@ -22,8 +22,8 @@ const authenticate = (req, res, next) => {
     } catch (err) {
         if (!refreshToken) {
             return res
-                .status(401)
-                .json({ message: 'Authentication required.' });
+                .status(403)
+                .json({ message: 'Authentication required' });
         }
         try {
             const decoded = jwt.verify(
@@ -35,14 +35,14 @@ const authenticate = (req, res, next) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '15m' }
             );
-            res.status(200)
+            res.status(403)
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                 })
                 .header('Authorization', accessToken)
-                .json({ message: 'Issued access token' });
+                .json({ message: 'Renewed expired access token' });
         } catch (err) {
-            res.status(401).json({ message: 'Authentication required' });
+            res.status(403).json({ message: 'Authentication required' });
         }
     }
 };
