@@ -5,5 +5,5 @@ exports.getIndex = (req, res, next) => {
 
 exports.getProtected = (req, res, next) => {
     // DUMMY
-    res.send('<h1>Protected<h1>');
+    res.send(`<h1>Protected accessed by ${req.user}<h1>`);
 };
