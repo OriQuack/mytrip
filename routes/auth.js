@@ -6,16 +6,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-router.post(
-    '/login',
-    body('email')
-        .isEmail()
-        .withMessage('Please enter a valid email.')
-        .normalizeEmail(),
-    authController.postLogin
-);
-
-router.post('/logout', authController.postLogout);
+router.post('/login', body('email').isEmail().withMessage('Please enter a valid email.').normalizeEmail(), authController.postLogin);
 
 router.post(
     '/signup',
