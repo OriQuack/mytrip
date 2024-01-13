@@ -14,11 +14,12 @@ const transporter = nodemailer.createTransport(sendgridTransport({
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-
+    console.log("postlogin");
     User.getUserByEmail(email).then((user) => {
         if (!user) {
             // TODO: send "Invalid email or password" error
-            return res.redirect('/login');
+            console.log("invalid email or password")
+            return res.status(404).json({messae: 'User not found!'});
         }
         // email에 대응하는 유저 존재
         console.log("user found!");
@@ -26,8 +27,7 @@ exports.postLogin = (req, res, next) => {
             .compare(password, user.password)
             .then((doMatch) => {
                 if (doMatch) {
-                    req.session.isLoggedIn = true;
-                    req.session.user = user;
+                    const accessToken = generateToken.genAccessToken(email);
                     console.log('password correct!');
                     return req.session.save((err) => {
                         console.log(err);

@@ -8,17 +8,24 @@ const bodyParser = require('body-parser');
 const mongoConnect = require('./util/database').mongoConnect;
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+//const csrf = require('csurf');
 
 const app = express();
+
 const store = new MongoDBStore({
     uri: process.env.DB_URI,
     collection: 'sessions',
 });
+//const csrfProtection = csrf();
+
 
 const options = require('./config/key_config').options;
 
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
+
+//app.use(csrfProtection);
+
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
