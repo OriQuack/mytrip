@@ -16,7 +16,7 @@ exports.postLogin = (req, res, next) => {
             .then((doMatch) => {
                 if (doMatch) {
                     const accessToken = generateToken.genAccessToken(email);
-                    const refreshToken = generateToken.genRefreshToken(email);
+                    const refreshToken = generateToken.genRefreshToken();
                     return res
                         .status(200)
                         .cookie('refreshToken', refreshToken, {
@@ -47,7 +47,7 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
             const accessToken = generateToken.genAccessToken(email);
-            const refreshToken = generateToken.genRefreshToken(email);
+            const refreshToken = generateToken.genRefreshToken();
             return res
                 .status(200)
                 .cookie('refreshToken', refreshToken, {

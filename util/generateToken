@@ -3,14 +3,14 @@ const jwt = require('jsonwebtoken');
 const genAccessToken = (email) => {
     const payload = { userEmail: email };
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '15m',
+        expiresIn: '30m',
     });
 };
 
-const genRefreshToken = (email) => {
-    const payload = { userEmail: email };
+const genRefreshToken = () => {
+    const payload = {};
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: '3d',
+        expiresIn: '1d',
     });
 };
 
