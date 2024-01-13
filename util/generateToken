@@ -9,7 +9,7 @@ const genAccessToken = (email) => {
 
 const genRefreshToken = () => {
     return jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: '1d',
+        expiresIn: '3d',
     });
 };
 
