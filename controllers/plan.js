@@ -1,3 +1,9 @@
-exports.getIndex = (req, res, next) => {  // TODO
-    res.send('<h1>Main</h1>');  // Connect to frontend
+exports.getIndex = (req, res, next) => {
+    // TODO
+    res.send('<h1>Main</h1>'); // Connect to frontend
+};
+
+exports.getProtected = (req, res, next) => {
+    // DUMMY
+    res.send('<h1>Protected<h1>');
 };
