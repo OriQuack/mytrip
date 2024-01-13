@@ -9,22 +9,17 @@ class User {
         this.resetToken = resetToken;
         this.resetTokenExpiration = resetTokenExpiration;
     }
+
     save() {
         const db = getDb();
         return db.collection('users').insertOne(this);
     }
-    createUser() {
-        const db = getDb();
-        if (!this.getUser(this.id)) {
-            console.log('id already exists!');
-        } else {
-            db.collection('users').insertOne(this);
-        }
-    }
+
     static deleteUser(userId) {
         const db = getDb();
         return db.collection('users').deleteOne({ _id: new mongodb.ObjectId(userId) });
     }
+
     static updateUserToken(userId, resetToken, resetTokenExpiration) {
         const db = getDb();
         return db.collection('users').updateOne(
@@ -37,6 +32,7 @@ class User {
             }
         );
     }
+    
     static updatePassword(userId, hashedPassword) {
         const db = getDb();
         return db.collection('users').updateOne(

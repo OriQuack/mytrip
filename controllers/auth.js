@@ -1,13 +1,9 @@
 const User = require('../models/user');
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-const { reset } = require('nodemon');
-const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
-const Users = require('../models/user');
 const generateToken = require('../util/generateToken');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
@@ -17,6 +13,7 @@ const transporter = nodemailer.createTransport(
         },
     })
 );
+
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
