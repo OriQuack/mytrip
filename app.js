@@ -20,8 +20,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
 
-app.use(authRoutes);
-app.use(planRoutes);
+app.use('/auth', authRoutes);
+app.use('/planning', planRoutes);
 
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버

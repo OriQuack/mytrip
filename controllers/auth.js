@@ -123,7 +123,7 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
                 subject: 'Password reset',
                 html: `
                     <p>You requested a password reset</p>
-                    <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+                    <p>Click this <a href="http://localhost:3000/auth/reset/${token}">link</a> to set a new password.</p>
                     `   
             });
            console.log('email send complete!');
