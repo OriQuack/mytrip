@@ -7,6 +7,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoConnect = require('./util/database').mongoConnect;
+const cors = require('cors');
 
 const User = require('./models/user');
 
