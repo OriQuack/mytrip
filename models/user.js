@@ -45,19 +45,7 @@ class User {
             "resetTokenExpriation": undefined,
         }})
     }
-    static getUserById(userId) {
-        const db = getDb();
-        return db
-            .collection('users')
-            .findOne({ _id: new mongodb.ObjectId(userId) })
-            .then((user) => {
-                console.log(user);
-                return user;
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
+   
     static getUserByEmail(userEmail) {
         const db = getDb();
         return db
@@ -69,7 +57,7 @@ class User {
             .catch((err) => {
                 console.log(err);
             });
-    }
+    }/*
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
@@ -85,6 +73,7 @@ class User {
             console.log(err);
         })
     }
+    */
 }
 
 module.exports = User;

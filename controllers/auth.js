@@ -4,6 +4,10 @@ const crypto = require('crypto');
 const { reset } = require('nodemon');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+const Users = require('../models/user');
+const generateToken = require('../util/generateToken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(sendgridTransport({
@@ -21,63 +25,55 @@ exports.postLogin = (req, res, next) => {
             console.log("invalid email or password")
             return res.status(404).json({messae: 'User not found!'});
         }
-        // email에 대응하는 유저 존재
-        console.log("user found!");
+       
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {
                 if (doMatch) {
                     const accessToken = generateToken.genAccessToken(email);
-                    console.log('password correct!');
-                    return req.session.save((err) => {
-                        console.log(err);
-                        res.redirect('/');
-                    });
+                    const refreshToken = generateToken.genRefreshToken(email);
+                    return res
+                        .status(200)
+                        .cookie('refreshToken', refreshToken, {
+                            httpOnly: true,
+                        })
+                        .header('Authorization', accessToken)
+                        .json({ username: user.username });
                 }
-                // TODO: send "Invalid email or password" error
-                console.log('Invalid email or password');
-                res.redirect('/login');
+                return res.status(401).json({ message: 'Incorrect password' });
             })
             .catch((err) => {
                 console.log(err);
-                return res.redirect('/login');
+                return res.status(400).json({ message: 'Bad request' });
             });
     });
 };
+
 exports.postSignup = (req, res, next) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
-    if (password !== confirmPassword) {
-        // TODO: Send "password does not match" error
-        console.log('password does not match');
-        return res.redirect('/signup');
-    }
-    User.getUserByEmail(email)
-        .then((userDoc) => {
-            if (userDoc) {
-                // 해당 email을 가진 유저가 이미 존재
-                // TODO: Send "user already exists" error
-                console.log('user already exists');
-                return res.redirect('/signup');
-            }
-            return bcrypt
-                .hash(password, 12)
-                .then((hashedPassword) => {
-                    const user = new User(username, email, hashedPassword);
-                    return user.save();
+
+    bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+            const user = new Users(username, email, hashedPassword);
+            return user.save();
+        })
+        .then((result) => {
+            const accessToken = generateToken.genAccessToken(email);
+            const refreshToken = generateToken.genRefreshToken(email);
+            return res
+                .status(200)
+                .cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
                 })
-                .then((result) => {
-                    console.log('signup complete!');
-                    res.redirect('/login');
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+                .header('Authorization', accessToken)
+                .json({ username: username });
         })
         .catch((err) => {
             console.log(err);
+            return res.status(500);
         });
 };
 exports.getReset = (req,res,next)=> {
@@ -105,13 +101,11 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
             }
             user.resetToken = token;
             user.resetTokenExpriation=Date.now()+3600000;
-            //const resetUser = new User(user.username,user.email,user.password,token,Date.now()+3600000);
-            //console.log(resetUser);
-            //resetUser.save();
+            
             return user;
         })
         .then(user=> {
-           // User.deleteUser(user._id);
+           
            User.updateUserToken(user._id,user.resetToken,user.resetTokenExpriation);
            console.log('update success!');
            return user;
@@ -119,9 +113,7 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
         .then(user=> {
             //check
             //send email
-             //TO DO:  이메일 전송 해야됨
-            
-            
+         
             transporter.sendMail({
                 to: user.email,
                 from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
