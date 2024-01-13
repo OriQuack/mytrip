@@ -5,3 +5,4 @@ config/secure/rootca.*
 .env.test.local
 .env.production.local
 node_modules/
+node_modules
