@@ -35,19 +35,6 @@ app.use(
 );
 // app.use(csrfProtection);
 
-app.use((req, res, next) => {
-    if (!req.session.user) {
-        return next();
-    }
-    User.getUserByEmail(req.session.user.email)
-    // session for current user exists
-        .then((user) => {
-            req.user = user;
-            next();
-        })
-        .catch((err) => console.log(err));
-});
-
 app.use(authRoutes);
 app.use(planRoutes);
 
