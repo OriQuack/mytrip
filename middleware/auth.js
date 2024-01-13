@@ -9,31 +9,32 @@ const authenticate = (req, res, next) => {
         // AT RT 모두 없음
         return res.status(403).json({ message: 'Authentication required' });
     }
-    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, accessDecoded) => {
         if (err) {
-            // AT invalid
-            if (!refreshToken) {
-                // AT invalid, RT가 없음
+            // AT invalid or expired
+            const accessExpired = jwt.decode(accessToken);
+            if (!refreshToken || accessExpired === null) {
+                // AT invalid or RT가 없음
                 return res.status(403).json({ message: 'Authentication required' });
             }
-            jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+            jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, refreshDecoded) => {
                 if (err) {
-                    // AT invalid, RT invalid
-                    res.status(403).json({ message: 'Authentication required' });
+                    // AT expired && RT invalid or expired
+                    return res.status(403).json({ message: 'Authentication required' });
                 } else {
-                    // AT invalid, RT valid -> AT 재발급
-                    const accessToken = generateToken.genAccessToken(decoded.email);
+                    // AT expired && RT valid -> AT 재발급
+                    const newAccessToken = generateToken.genAccessToken(accessExpired.userEmail);
                     res.status(403)
                         .cookie('refreshToken', refreshToken, {
                             httpOnly: true,
                         })
-                        .header('Authorization', accessToken)
+                        .header('Authorization', newAccessToken)
                         .json({ message: 'Renewed expired access token' });
                 }
             });
         } else {
             // AT valid
-            User.getUserByEmail(decoded.userEmail).then((user) => {
+            User.getUserByEmail(accessDecoded.userEmail).then((user) => {
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }

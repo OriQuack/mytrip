@@ -3,7 +3,7 @@ exports.getIndex = (req, res, next) => {
     res.send('<h1>Main</h1>'); // Connect to frontend
 };
 
-exports.getProtected = (req, res, next) => {
+exports.getProtectedExample = (req, res, next) => {
     // DUMMY
-    res.send(`<h1>Protected accessed by ${req.user}<h1>`);
+    res.send(`Protected route accessed by ${req.user.username}`);
 };
