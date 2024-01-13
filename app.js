@@ -6,18 +6,10 @@ const https = require('https');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoConnect = require('./util/database').mongoConnect;
-const session = require('express-session');
-const MongoDBStore = require('connect-mongodb-session')(session);
-const csrf = require('csurf');
 
 const User = require('./models/user');
 
 const app = express();
-const store = new MongoDBStore({
-    uri: process.env.DB_URI,
-    collection: 'sessions',
-});
-const csrfProtection = csrf();
 
 // const options = require('./config/key_config').options;
 const authRoutes = require('./routes/auth');
@@ -25,15 +17,6 @@ const planRoutes = require('./routes/plan');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        store: store,
-    })
-);
-// app.use(csrfProtection);
 
 app.use(authRoutes);
 app.use(planRoutes);
