@@ -73,6 +73,26 @@ class User {
                 console.log(err);
             });
     }
+
+    static deleteUserByEmail(email) {
+        const db = getDb();
+        return db
+            .collection('users')
+            .deleteOne({ email: email }) // Changed userEmail to email
+            .then((result) => {
+                if (result.deletedCount === 1) {
+                    console.log('User successfully deleted');
+                    return 1;
+                } else {
+                    console.log('Error in deleting a user');
+                    return 0;
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
+    }
     /*
     static getUserByToken(userToken) {
         const db = getDb();
