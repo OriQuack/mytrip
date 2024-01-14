@@ -80,7 +80,6 @@ exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
     //---> 유저가 이메일로 받은 링크로 접속시, 그 링크에 있는 토큰과 디비에 저장해놨던 토큰을 비교해서 유저임을 검증
     //--->why?: 다른 유저가 대충 url떄려맞춰서 비번 마음대로 바꿀 수 있음.
-
     crypto.randomBytes(32, (err, buffer) => {
         //create token
         if (err) {
@@ -101,7 +100,6 @@ exports.postReset = (req, res, next) => {
                 }
                 user.resetToken = token;
                 user.resetTokenExpriation = Date.now() + 3600000;
-
                 return user;
             })
             .then((user) => {
@@ -112,7 +110,6 @@ exports.postReset = (req, res, next) => {
             .then((user) => {
                 //check
                 //send email
-
                 transporter.sendMail({
                     to: user.email,
                     from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
