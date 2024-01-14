@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const generateToken = require('../util/generateToken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
@@ -16,7 +17,6 @@ const transporter = nodemailer.createTransport(
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    console.log('postlogin');
     User.getUserByEmail(email).then((user) => {
         if (!user) {
             // TODO: send "Invalid email or password" error
