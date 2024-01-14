@@ -21,6 +21,7 @@ const planRoutes = require('./routes/plan');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors(corsOptions));
 
 app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
