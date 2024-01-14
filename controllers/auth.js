@@ -19,9 +19,6 @@ exports.postLogin = (req, res, next) => {
     const password = req.body.password;
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            // TODO: send "Invalid email or password" error
-            console.log('invalid email or password');
-
             return res.status(404).json({ messae: 'User not found!' });
         }
 
