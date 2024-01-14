@@ -32,7 +32,7 @@ class User {
             }
         );
     }
-    
+
     static updatePassword(userId, hashedPassword) {
         const db = getDb();
         return db.collection('users').updateOne(
