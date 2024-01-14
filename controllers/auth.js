@@ -56,7 +56,7 @@ exports.postSignup = (req, res, next) => {
     bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
-            const user = new Users(username, email, hashedPassword);
+            const user = new User(username, email, hashedPassword);
             return user.save();
         })
         .then((result) => {
@@ -179,5 +179,33 @@ exports.postNewPassword = (req, res, next) => {
         .catch((err) => {
             console.log(err);
             res.redirect('/new-password');
+        });
+};
+
+exports.postVerifyUsername = (req, res, next) => {
+    const username = req.body.username;
+    User.getUserByUsername(username)
+        .then((user) => {
+            if (user) {
+                return res.status(409).json({ message: 'Username already exists' });
+            }
+            return res.status(200).json({ message: 'Valid username' });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+exports.postVerifyEmail = (req, res, next) => {
+    const email = req.body.username;
+    User.getUserByUsername(email)
+        .then((user) => {
+            if (user) {
+                return res.status(409).json({ message: 'Username already exists' });
+            }
+            return res.status(200).json({ message: 'Valid username' });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal Server Error' });
         });
 };

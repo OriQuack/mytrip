@@ -58,7 +58,21 @@ class User {
             .catch((err) => {
                 console.log(err);
             });
-    } /*
+    }
+
+    static getUserByUsername(username) {
+        const db = getDb();
+        return db
+            .collection('users')
+            .findOne({ username: username })
+            .then((user) => {
+                return user;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+    /*
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
