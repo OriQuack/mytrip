@@ -1,9 +1,10 @@
-const User = require('../models/user');
-const generateToken = require('../util/generateToken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+const User = require('../models/user');
+const generateToken = require('../util/generateToken');
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
