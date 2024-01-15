@@ -1,9 +1,10 @@
-const User = require('../models/user');
-const generateToken = require('../util/generateToken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+const User = require('../models/user');
+const generateToken = require('../util/generateToken');
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
@@ -19,10 +20,7 @@ exports.postLogin = (req, res, next) => {
     const password = req.body.password;
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            // TODO: send "Invalid email or password" error
-            console.log('invalid email or password');
-
-            return res.status(404).json({ messae: 'User not found!' });
+            return res.status(404).json({ message: 'User not found!' });
         }
 
         bcrypt
@@ -56,7 +54,7 @@ exports.postSignup = (req, res, next) => {
     bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
-            const user = new Users(username, email, hashedPassword);
+            const user = new User(username, email, hashedPassword);
             return user.save();
         })
         .then((result) => {
@@ -76,13 +74,12 @@ exports.postSignup = (req, res, next) => {
         });
 };
 
-exports.getReset = (req, res, next) => {};
+exports.getReset = (req, res, next) => { };
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
     //---> 유저가 이메일로 받은 링크로 접속시, 그 링크에 있는 토큰과 디비에 저장해놨던 토큰을 비교해서 유저임을 검증
     //--->why?: 다른 유저가 대충 url떄려맞춰서 비번 마음대로 바꿀 수 있음.
-
     crypto.randomBytes(32, (err, buffer) => {
         //create token
         if (err) {
@@ -103,7 +100,6 @@ exports.postReset = (req, res, next) => {
                 }
                 user.resetToken = token;
                 user.resetTokenExpriation = Date.now() + 3600000;
-
                 return user;
             })
             .then((user) => {
@@ -114,7 +110,6 @@ exports.postReset = (req, res, next) => {
             .then((user) => {
                 //check
                 //send email
-
                 transporter.sendMail({
                     to: user.email,
                     from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
@@ -179,5 +174,66 @@ exports.postNewPassword = (req, res, next) => {
         .catch((err) => {
             console.log(err);
             res.redirect('/new-password');
+        });
+};
+
+exports.postVerifyUsername = (req, res, next) => {
+    const username = req.body.username;
+    User.getUserByUsername(username)
+        .then((user) => {
+            if (user) {
+                return res.status(409).json({ message: 'Username already exists' });
+            }
+            return res.status(200).json({ message: 'Valid username' });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+exports.postVerifyEmail = (req, res, next) => {
+    const email = req.body.email;
+    User.getUserByEmail(email)
+        .then((user) => {
+            if (user) {
+                return res.status(409).json({ message: 'Email already exists' });
+            }
+            return res.status(200).json({ message: 'Valid email' });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+exports.deleteUserData = (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    User.getUserByEmail(email)
+        .then((user) => {
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            bcrypt
+                .compare(password, user.password)
+                .then((doMatch) => {
+                    if (doMatch) {
+                        User.deleteUserByEmail(email)
+                            .then(result => {
+                                if (result === 1) {
+                                    return res.status(200).json({ message: 'User successfully deleted' });
+                                }
+                                return res.status(404).json({ message: 'Error in deleting user: user not found' });
+                            })
+                    } else {
+                        return res.status(401).json({ message: 'Incorrect password' });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res.status(400).json({ message: 'Bad request' });
+                });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal Server Error' });
         });
 };

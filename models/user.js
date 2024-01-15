@@ -1,4 +1,5 @@
 const mongodb = require('mongodb');
+
 const getDb = require('../util/database').getDb;
 
 class User {
@@ -58,7 +59,41 @@ class User {
             .catch((err) => {
                 console.log(err);
             });
-    } /*
+    }
+
+    static getUserByUsername(username) {
+        const db = getDb();
+        return db
+            .collection('users')
+            .findOne({ username: username })
+            .then((user) => {
+                return user;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    static deleteUserByEmail(email) {
+        const db = getDb();
+        return db
+            .collection('users')
+            .deleteOne({ email: email }) // Changed userEmail to email
+            .then((result) => {
+                if (result.deletedCount === 1) {
+                    console.log('User successfully deleted');
+                    return 1;
+                } else {
+                    console.log('Error in deleting a user');
+                    return 0;
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
+    }
+    /*
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
