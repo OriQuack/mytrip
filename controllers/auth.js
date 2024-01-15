@@ -137,7 +137,7 @@ exports.postReset = (req,res,next)=> {  //비밀번호 리셋시 , 토큰이 담
         });
     });
 };
-
+/*
 exports.getNewPassword = (req,res,next)=> {
     const token= req.params.token;
     console.log(token);
@@ -162,7 +162,7 @@ exports.getNewPassword = (req,res,next)=> {
         res.status(400);
     })
 }
-
+*/
 exports.postNewPassword = (req,res,next)=> {  //위에서 받은 token,userId로 유저 검사
     //const username = req.body.username;
     const newPassword = req.body.password;
