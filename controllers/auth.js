@@ -20,7 +20,7 @@ exports.postLogin = (req, res, next) => {
     const password = req.body.password;
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.status(404).json({ messae: 'User not found!' });
+            return res.status(404).json({ message: 'User not found!' });
         }
 
         bcrypt
@@ -74,7 +74,7 @@ exports.postSignup = (req, res, next) => {
         });
 };
 
-exports.getReset = (req, res, next) => {};
+exports.getReset = (req, res, next) => { };
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
@@ -192,13 +192,46 @@ exports.postVerifyUsername = (req, res, next) => {
 };
 
 exports.postVerifyEmail = (req, res, next) => {
-    const email = req.body.username;
-    User.getUserByUsername(email)
+    const email = req.body.email;
+    User.getUserByEmail(email)
         .then((user) => {
             if (user) {
-                return res.status(409).json({ message: 'Username already exists' });
+                return res.status(409).json({ message: 'Email already exists' });
             }
-            return res.status(200).json({ message: 'Valid username' });
+            return res.status(200).json({ message: 'Valid email' });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+exports.deleteUserData = (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    User.getUserByEmail(email)
+        .then((user) => {
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            bcrypt
+                .compare(password, user.password)
+                .then((doMatch) => {
+                    if (doMatch) {
+                        User.deleteUserByEmail(email)
+                            .then(result => {
+                                if (result === 1) {
+                                    return res.status(200).json({ message: 'User successfully deleted' });
+                                }
+                                return res.status(404).json({ message: 'Error in deleting user: user not found' });
+                            })
+                    } else {
+                        return res.status(401).json({ message: 'Incorrect password' });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res.status(400).json({ message: 'Bad request' });
+                });
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Internal Server Error' });

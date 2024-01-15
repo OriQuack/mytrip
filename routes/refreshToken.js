@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
+const express = require('express');
 
-const User = require('../models/user');
-const generateToken = require('../util/generateToken');
+const router = express.Router();
 
-const authenticate = (req, res, next) => {
+router.get('/refresh', (req, res, next) => {
     const accessToken = req.headers['authorization'];
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken && !refreshToken) {
@@ -40,11 +40,10 @@ const authenticate = (req, res, next) => {
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }
-                req.user = user;
-                next();
+                return res.status(200).json({ username: user.username });
             });
         }
     });
-};
+});
 
-module.exports = authenticate;
+module.exports = router;
