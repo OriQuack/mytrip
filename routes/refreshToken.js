@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
 
+const User = require('../models/user');
+const generateToken = require('../util/generateToken');
+
 const router = express.Router();
 
 router.get('/refresh', (req, res, next) => {
