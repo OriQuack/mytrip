@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const genAccessToken = (email) => {
     const payload = { userEmail: email };
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '30m',
+        expiresIn: '15m',
     });
 };
 
