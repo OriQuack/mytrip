@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(authRoutes);
 app.use(planRoutes);
-
+app.use(OauthRoutes);
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
     // https.createServer(options, app).listen(process.env.HTTPS_PORT); // https 서버
