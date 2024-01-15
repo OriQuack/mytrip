@@ -74,7 +74,7 @@ exports.postSignup = (req, res, next) => {
         });
 };
 
-exports.getReset = (req, res, next) => { };
+exports.getReset = (req, res, next) => {};
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
@@ -217,13 +217,16 @@ exports.deleteUserData = (req, res, next) => {
                 .compare(password, user.password)
                 .then((doMatch) => {
                     if (doMatch) {
-                        User.deleteUserByEmail(email)
-                            .then(result => {
-                                if (result === 1) {
-                                    return res.status(200).json({ message: 'User successfully deleted' });
-                                }
-                                return res.status(404).json({ message: 'Error in deleting user: user not found' });
-                            })
+                        User.deleteUserByEmail(email).then((result) => {
+                            if (result === 1) {
+                                return res
+                                    .status(200)
+                                    .json({ message: 'User successfully deleted' });
+                            }
+                            return res
+                                .status(404)
+                                .json({ message: 'Error in deleting user: user not found' });
+                        });
                     } else {
                         return res.status(401).json({ message: 'Incorrect password' });
                     }
@@ -235,5 +238,30 @@ exports.deleteUserData = (req, res, next) => {
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+exports.postGoogleLogin = (req, res) => {
+    const code = req.body.code;
+    axios
+        .post('<https://oauth2.googleapis.com/token>', {
+            client_id: env.process.GOOGLE_CLIENT_ID,
+            client_secret: env.process.GOOGLE_CLIENT_SECRET,
+            code,
+            redirect_uri: env.process.GOOGLE_REDIRECT_URI,
+            grant_type: 'authorization_code',
+        })
+        .then((google_token) => {
+            axios
+                .get('<https://www.googleapis.com/oauth2/v1/userinfo>', {
+                    headers: { Authorization: `Bearer ${google_token}` },
+                })
+                .then((profile) => {
+                    console.log(profile);
+                });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: 'Google API server error' });
         });
 };
