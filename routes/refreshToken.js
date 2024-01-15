@@ -3,7 +3,7 @@ const express = require('express');
 
 const router = express.Router();
 
-router.post('/refresh', (req, res, next) => {
+router.get('/refresh', (req, res, next) => {
     const accessToken = req.headers['authorization'];
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken && !refreshToken) {
