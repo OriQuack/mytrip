@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const express = require('express');
 
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
@@ -86,4 +87,4 @@ router.get('/refresh', (req, res) => {
     );
 });
 
-module.exports = authenticate;
+module.exports = router;
