@@ -15,7 +15,7 @@ const app = express();
 // const options = require('./config/key_config').options;
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
-
+const OauthRoutes = require('./routes/Oauth');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
