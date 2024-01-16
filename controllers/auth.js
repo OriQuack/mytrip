@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const env = require('dotenv');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const axios = require('axios');
@@ -254,8 +255,14 @@ exports.deleteUserData = (req, res, next) => {
         });
 };
 
+exports.getGoogleCode = (req, res) => {
+    return axios.post(
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.GOOGLE_CLIENTID}&scope=openid%20profile%20email&redirect_uri=http://localhost:3000/auth/google`
+    );
+};
+
 exports.postGoogleLogin = (req, res) => {
-    const code = req.body.code;
+    const code = req.params.code;
     axios
         .post('<https://oauth2.googleapis.com/token>', {
             client_id: env.process.GOOGLE_CLIENTID,
