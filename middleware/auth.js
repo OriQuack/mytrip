@@ -4,7 +4,7 @@ const User = require('../models/user');
 const generateToken = require('../util/generateToken');
 
 const authenticate = (req, res, next) => {
-    const accessToken = req.headers['authorization'];
+    const accessToken = req.headers['authorization'].split(" ")[1];
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음

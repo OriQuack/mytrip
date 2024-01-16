@@ -7,7 +7,7 @@ const generateToken = require('../util/generateToken');
 const router = express.Router();
 
 router.get('/refresh', (req, res) => {
-    const accessToken = req.headers['authorization'];
+    const accessToken = req.headers['authorization'].split(' ')[1];
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음
