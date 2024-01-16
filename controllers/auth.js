@@ -206,7 +206,7 @@ exports.postVerifyEmail = (req, res, next) => {
         });
 };
 
-exports.postChangeUsername = (req, res, next) => {
+exports.postUpdateUsername = (req, res, next) => {
     const username = req.body.username;
     req.user.updateUsername(username);
     res.status(200).json({ message: 'Username updated' });
