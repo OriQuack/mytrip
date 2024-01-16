@@ -27,6 +27,4 @@ router.delete('/signout', authenticate, authController.deleteUserData);
 
 router.post('/google', authController.postGoogleLogin);
 
-router.get('/google_code', authController.getGoogleCode);
-
 module.exports = router;
