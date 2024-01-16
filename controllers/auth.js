@@ -29,7 +29,7 @@ exports.postLogin = (req, res, next) => {
             .then((doMatch) => {
                 if (doMatch) {
                     const accessToken = generateToken.genAccessToken(email);
-                    const refreshToken = generateToken.genRefreshToken(email);
+                    const refreshToken = generateToken.genRefreshToken();
                     return res
                         .status(200)
                         .cookie('refreshToken', refreshToken, {
@@ -60,9 +60,9 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
             const accessToken = generateToken.genAccessToken(email);
-            const refreshToken = generateToken.genRefreshToken(email);
+            const refreshToken = generateToken.genRefreshToken();
             return res
-                .status(200)
+                .status(201)
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                 })
@@ -271,17 +271,21 @@ exports.postGoogleLogin = (req, res) => {
                         strict: true,
                     });
                     User.getUserByEmail(email).then((user) => {
+                        const accessToken = generateToken.genAccessToken(email);
+                        const refreshToken = generateToken.genRefreshToken();
                         if (!user) {
                             // signup
                             const newUser = new User(username, email, password);
-                            newUser.save()
-                            .then((result) => {
-                                
-                            })
+                            newUser.save().then((result) => {
+                                return res.status(201)
+                                    .cookie('refreshToken', refreshToken, {
+                                        httpOnly: true,
+                                    })
+                                    .header('Authorization', accessToken)
+                                    .json({ username: username });
+                            });
                         }
                         // login
-                        const accessToken = generateToken.genAccessToken(email);
-                        const refreshToken = generateToken.genRefreshToken(email);
                         return res
                             .status(200)
                             .cookie('refreshToken', refreshToken, {
