@@ -22,7 +22,6 @@ exports.postLogin = (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found!' });
         }
-
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {
@@ -245,10 +244,10 @@ exports.postGoogleLogin = (req, res) => {
     const code = req.body.code;
     axios
         .post('<https://oauth2.googleapis.com/token>', {
-            client_id: env.process.GOOGLE_CLIENT_ID,
-            client_secret: env.process.GOOGLE_CLIENT_SECRET,
+            client_id: env.process.GOOGLE_CLIENTID,
+            client_secret: env.process.GOOGLE_SECRETKEY,
             code,
-            redirect_uri: env.process.GOOGLE_REDIRECT_URI,
+            redirect_uri: env.process.GOOGLE_REDIRECTURI,
             grant_type: 'authorization_code',
         })
         .then((google_token) => {
@@ -256,8 +255,32 @@ exports.postGoogleLogin = (req, res) => {
                 .get('<https://www.googleapis.com/oauth2/v1/userinfo>', {
                     headers: { Authorization: `Bearer ${google_token}` },
                 })
-                .then((profile) => {
-                    console.log(profile);
+                .then((userinfo) => {
+                    console.log(userinfo);
+                    const email = userinfo.email;
+                    const profile = userinfo.profile;
+
+                    User.getUserByEmail(email).then((user) => {
+                        if (!user) {
+                            // signup TODO
+                            
+                            const newUser = new User();
+                        }
+                        // login
+                        const accessToken = generateToken.genAccessToken(email);
+                        const refreshToken = generateToken.genRefreshToken(email);
+                        return res
+                            .status(200)
+                            .cookie('refreshToken', refreshToken, {
+                                httpOnly: true,
+                            })
+                            .header('Authorization', accessToken)
+                            .json({ username: user.username });
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res.status(500).json({ message: 'Google API server error' });
                 });
         })
         .catch((err) => {
