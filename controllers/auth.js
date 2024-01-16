@@ -188,7 +188,7 @@ exports.postVerifyUsername = (req, res, next) => {
             return res.status(200).json({ message: 'Valid username' });
         })
         .catch((err) => {
-            return res.status(500).json({ message: 'Internal Server Error' });
+            return res.status(500).json({ message: 'Internal server error' });
         });
 };
 
@@ -202,14 +202,20 @@ exports.postVerifyEmail = (req, res, next) => {
             return res.status(200).json({ message: 'Valid email' });
         })
         .catch((err) => {
-            return res.status(500).json({ message: 'Internal Server Error' });
+            return res.status(500).json({ message: 'Internal server error' });
         });
 };
 
 exports.postUpdateUsername = (req, res, next) => {
     const username = req.body.username;
-    req.user.updateUsername(username);
-    res.status(200).json({ message: 'Username updated' });
+    req.user
+        .updateUsername(username)
+        .then((result) => {
+            return res.status(200).json({ message: 'Username updated' });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Interner server error' });
+        });
 };
 
 exports.deleteUserData = (req, res, next) => {
@@ -244,7 +250,7 @@ exports.deleteUserData = (req, res, next) => {
                 });
         })
         .catch((err) => {
-            return res.status(500).json({ message: 'Internal Server Error' });
+            return res.status(500).json({ message: 'Internal server error' });
         });
 };
 
