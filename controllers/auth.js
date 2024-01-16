@@ -206,6 +206,12 @@ exports.postVerifyEmail = (req, res, next) => {
         });
 };
 
+exports.postChangeUsername = (req, res, next) => {
+    const username = req.body.username;
+    req.user.updateUsername(username);
+    res.status(200).json({ message: 'Username updated' });
+};
+
 exports.deleteUserData = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
