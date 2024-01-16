@@ -18,7 +18,7 @@ class User {
 
     updateUsername(username) {
         const db = getDb();
-        db.collection('users').updateOne(
+        return db.collection('users').updateOne(
             { _id: new mongodb.ObjectId(this._id) },
             {
                 $set: {
