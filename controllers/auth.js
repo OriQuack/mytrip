@@ -255,12 +255,6 @@ exports.deleteUserData = (req, res, next) => {
         });
 };
 
-exports.getGoogleCode = (req, res) => {
-    return axios.post(
-        `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.GOOGLE_CLIENTID}&scope=openid%20profile%20email&redirect_uri=http://localhost:3000/auth/google`
-    );
-};
-
 exports.postGoogleLogin = (req, res) => {
     const code = req.body.code;
     axios
@@ -271,8 +265,8 @@ exports.postGoogleLogin = (req, res) => {
             redirect_uri: process.env.VITE_GOOGLE_REDIRECTURL,
             grant_type: 'authorization_code',
         })
-        .then((data) => {
-            const { access_token, id_token } = data.data;
+        .then((result) => {
+            const { access_token, id_token } = result.data;
             axios
                 .get('https://www.googleapis.com/oauth2/v1/userinfo', {
                     headers: {
