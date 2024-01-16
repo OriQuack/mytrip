@@ -25,7 +25,7 @@ router.post('/update-username', authenticate, authController.postUpdateUsername)
 
 router.delete('/signout', authenticate, authController.deleteUserData);
 
-router.post('/google/:code', authController.postGoogleLogin);
+router.post('/google', authController.postGoogleLogin);
 
 router.get('/google_code', authController.getGoogleCode);
 

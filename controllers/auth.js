@@ -262,7 +262,7 @@ exports.getGoogleCode = (req, res) => {
 };
 
 exports.postGoogleLogin = (req, res) => {
-    const code = req.params.code;
+    const code = req.body.code;
     axios
         .post('<https://oauth2.googleapis.com/token>', {
             client_id: env.process.GOOGLE_CLIENTID,
