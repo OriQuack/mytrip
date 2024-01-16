@@ -264,20 +264,24 @@ exports.getGoogleCode = (req, res) => {
 exports.postGoogleLogin = (req, res) => {
     const code = req.body.code;
     axios
-        .post('<https://oauth2.googleapis.com/token>', {
-            client_id: process.env.GOOGLE_CLIENTID,
-            client_secret: process.env.GOOGLE_SECRETKEY,
+        .post('https://oauth2.googleapis.com/token', {
+            client_id: process.env.VITE_GOOGLE_CLIENTID,
+            client_secret: process.env.VITE_GOOGLE_SECRETKEY,
             code,
-            redirect_uri: process.env.GOOGLE_REDIRECTURI,
+            redirect_uri: process.env.VITE_GOOGLE_REDIRECTURL,
             grant_type: 'authorization_code',
         })
-        .then((google_token) => {
+        .then((data) => {
+            const { access_token, id_token } = data.data;
             axios
-                .get('<https://www.googleapis.com/oauth2/v1/userinfo>', {
-                    headers: { Authorization: `Bearer ${google_token}` },
+                .get('https://www.googleapis.com/oauth2/v1/userinfo', {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
                 })
                 .then((userinfo) => {
-                    const email = userinfo.email;
+                    const email = userinfo.data.email;
                     User.getUserByEmail(email).then((user) => {
                         const accessToken = generateToken.genAccessToken(email);
                         const refreshToken = generateToken.genRefreshToken();
@@ -293,27 +297,44 @@ exports.postGoogleLogin = (req, res) => {
                                 symbols: true,
                                 strict: true,
                             });
-                            bcrypt.hash(password, 12).then((hashedPassword) => {
-                                const newUser = new User(username, email, hashedPassword);
-                                newUser.save().then((result) => {
-                                    return res
-                                        .status(201)
-                                        .cookie('refreshToken', refreshToken, {
-                                            httpOnly: true,
+                            bcrypt
+                                .hash(password, 12)
+                                .then((hashedPassword) => {
+                                    const newUser = new User(username, email, hashedPassword);
+                                    newUser
+                                        .save()
+                                        .then((result) => {
+                                            return res
+                                                .status(201)
+                                                .cookie('refreshToken', refreshToken, {
+                                                    httpOnly: true,
+                                                })
+                                                .header('Authorization', accessToken)
+                                                .json({ username: username });
                                         })
-                                        .header('Authorization', accessToken)
-                                        .json({ username: username });
+                                        .catch((err) => {
+                                            console.log(err);
+                                            return res
+                                                .status(500)
+                                                .json({ message: 'Internal server error' });
+                                        });
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                    return res
+                                        .status(500)
+                                        .json({ message: 'Internal server error' });
                                 });
-                            });
+                        } else {
+                            // DB에 유저 존재 -> login
+                            return res
+                                .status(200)
+                                .cookie('refreshToken', refreshToken, {
+                                    httpOnly: true,
+                                })
+                                .header('Authorization', accessToken)
+                                .json({ username: user.username });
                         }
-                        // DB에 유저 존재 -> login
-                        return res
-                            .status(200)
-                            .cookie('refreshToken', refreshToken, {
-                                httpOnly: true,
-                            })
-                            .header('Authorization', accessToken)
-                            .json({ username: user.username });
                     });
                 })
                 .catch((err) => {
