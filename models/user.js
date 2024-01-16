@@ -105,7 +105,7 @@ class User {
                 throw err;
             });
     }
-    /*
+    
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
@@ -121,7 +121,7 @@ class User {
             console.log(err);
         })
     }
-    */
+    
 }
 
 module.exports = User;
