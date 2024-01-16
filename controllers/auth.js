@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+const axios = require('axios');
+const generator = require('generate-password');
 
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
@@ -257,14 +259,25 @@ exports.postGoogleLogin = (req, res) => {
                 })
                 .then((userinfo) => {
                     console.log(userinfo);
+                    const username = generator.generate({
+                        length: 8,
+                        numbers: true,
+                    });
                     const email = userinfo.email;
-                    const profile = userinfo.profile;
-
+                    const password = generator.generate({
+                        length: 14,
+                        numbers: true,
+                        symbols: true,
+                        strict: true,
+                    });
                     User.getUserByEmail(email).then((user) => {
                         if (!user) {
-                            // signup TODO
-                            
-                            const newUser = new User();
+                            // signup
+                            const newUser = new User(username, email, password);
+                            newUser.save()
+                            .then((result) => {
+                                
+                            })
                         }
                         // login
                         const accessToken = generateToken.genAccessToken(email);

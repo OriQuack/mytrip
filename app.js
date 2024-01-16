@@ -6,7 +6,6 @@ const https = require('https');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const axios = require('axios');
 const mongoConnect = require('./util/database').mongoConnect;
 
 const User = require('./models/user');
