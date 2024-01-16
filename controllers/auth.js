@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+const axios = require('axios');
+const generator = require('generate-password');
 
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
@@ -22,13 +24,12 @@ exports.postLogin = (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found!' });
         }
-
         bcrypt
             .compare(password, user.password)
             .then((doMatch) => {
                 if (doMatch) {
                     const accessToken = generateToken.genAccessToken(email);
-                    const refreshToken = generateToken.genRefreshToken(email);
+                    const refreshToken = generateToken.genRefreshToken();
                     return res
                         .status(200)
                         .cookie('refreshToken', refreshToken, {
@@ -59,9 +60,9 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
             const accessToken = generateToken.genAccessToken(email);
-            const refreshToken = generateToken.genRefreshToken(email);
+            const refreshToken = generateToken.genRefreshToken();
             return res
-                .status(200)
+                .status(201)
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                 })
@@ -74,7 +75,7 @@ exports.postSignup = (req, res, next) => {
         });
 };
 
-exports.getReset = (req, res, next) => { };
+exports.getReset = (req, res, next) => {};
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
@@ -205,6 +206,12 @@ exports.postVerifyEmail = (req, res, next) => {
         });
 };
 
+exports.postUpdateUsername = (req, res, next) => {
+    const username = req.body.username;
+    req.user.updateUsername(username);
+    res.status(200).json({ message: 'Username updated' });
+};
+
 exports.deleteUserData = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -217,13 +224,16 @@ exports.deleteUserData = (req, res, next) => {
                 .compare(password, user.password)
                 .then((doMatch) => {
                     if (doMatch) {
-                        User.deleteUserByEmail(email)
-                            .then(result => {
-                                if (result === 1) {
-                                    return res.status(200).json({ message: 'User successfully deleted' });
-                                }
-                                return res.status(404).json({ message: 'Error in deleting user: user not found' });
-                            })
+                        User.deleteUserByEmail(email).then((result) => {
+                            if (result === 1) {
+                                return res
+                                    .status(200)
+                                    .json({ message: 'User successfully deleted' });
+                            }
+                            return res
+                                .status(404)
+                                .json({ message: 'Error in deleting user: user not found' });
+                        });
                     } else {
                         return res.status(401).json({ message: 'Incorrect password' });
                     }
@@ -235,5 +245,71 @@ exports.deleteUserData = (req, res, next) => {
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+exports.postGoogleLogin = (req, res) => {
+    const code = req.body.code;
+    axios
+        .post('<https://oauth2.googleapis.com/token>', {
+            client_id: env.process.GOOGLE_CLIENTID,
+            client_secret: env.process.GOOGLE_SECRETKEY,
+            code,
+            redirect_uri: env.process.GOOGLE_REDIRECTURI,
+            grant_type: 'authorization_code',
+        })
+        .then((google_token) => {
+            axios
+                .get('<https://www.googleapis.com/oauth2/v1/userinfo>', {
+                    headers: { Authorization: `Bearer ${google_token}` },
+                })
+                .then((userinfo) => {
+                    const email = userinfo.email;
+                    User.getUserByEmail(email).then((user) => {
+                        const accessToken = generateToken.genAccessToken(email);
+                        const refreshToken = generateToken.genRefreshToken();
+                        if (!user) {
+                            // 첫 SNS 로그인 -> signup
+                            const username = generator.generate({
+                                length: 8,
+                                numbers: true,
+                            });
+                            const password = generator.generate({
+                                length: 14,
+                                numbers: true,
+                                symbols: true,
+                                strict: true,
+                            });
+                            bcrypt.hash(password, 12).then((hashedPassword) => {
+                                const newUser = new User(username, email, hashedPassword);
+                                newUser.save().then((result) => {
+                                    return res
+                                        .status(201)
+                                        .cookie('refreshToken', refreshToken, {
+                                            httpOnly: true,
+                                        })
+                                        .header('Authorization', accessToken)
+                                        .json({ username: username });
+                                });
+                            });
+                        }
+                        // DB에 유저 존재 -> login
+                        return res
+                            .status(200)
+                            .cookie('refreshToken', refreshToken, {
+                                httpOnly: true,
+                            })
+                            .header('Authorization', accessToken)
+                            .json({ username: user.username });
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res.status(500).json({ message: 'Google API server error' });
+                });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: 'Google API server error' });
         });
 };

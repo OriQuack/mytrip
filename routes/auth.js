@@ -21,6 +21,10 @@ router.post('/verify/username', authController.postVerifyUsername);
 
 router.post('/verify/email', authController.postVerifyEmail);
 
+router.post('/update-username', authenticate, authController.postUpdateUsername);
+
 router.delete('/signout', authenticate, authController.deleteUserData);
+
+router.post('/google', authController.postGoogleLogin);
 
 module.exports = router;

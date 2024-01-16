@@ -16,6 +16,18 @@ class User {
         return db.collection('users').insertOne(this);
     }
 
+    updateUsername(username) {
+        const db = getDb();
+        db.collection('users').updateOne(
+            { _id: new mongodb.ObjectId(this._id) },
+            {
+                $set: {
+                    username: username,
+                },
+            }
+        );
+    }
+
     static deleteUser(userId) {
         const db = getDb();
         return db.collection('users').deleteOne({ _id: new mongodb.ObjectId(userId) });
