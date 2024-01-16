@@ -258,34 +258,36 @@ exports.postGoogleLogin = (req, res) => {
                     headers: { Authorization: `Bearer ${google_token}` },
                 })
                 .then((userinfo) => {
-                    console.log(userinfo);
-                    const username = generator.generate({
-                        length: 8,
-                        numbers: true,
-                    });
                     const email = userinfo.email;
-                    const password = generator.generate({
-                        length: 14,
-                        numbers: true,
-                        symbols: true,
-                        strict: true,
-                    });
                     User.getUserByEmail(email).then((user) => {
                         const accessToken = generateToken.genAccessToken(email);
                         const refreshToken = generateToken.genRefreshToken();
                         if (!user) {
-                            // signup
-                            const newUser = new User(username, email, password);
-                            newUser.save().then((result) => {
-                                return res.status(201)
-                                    .cookie('refreshToken', refreshToken, {
-                                        httpOnly: true,
-                                    })
-                                    .header('Authorization', accessToken)
-                                    .json({ username: username });
+                            // 첫 SNS 로그인 -> signup
+                            const username = generator.generate({
+                                length: 8,
+                                numbers: true,
+                            });
+                            const password = generator.generate({
+                                length: 14,
+                                numbers: true,
+                                symbols: true,
+                                strict: true,
+                            });
+                            bcrypt.hash(password, 12).then((hashedPassword) => {
+                                const newUser = new User(username, email, hashedPassword);
+                                newUser.save().then((result) => {
+                                    return res
+                                        .status(201)
+                                        .cookie('refreshToken', refreshToken, {
+                                            httpOnly: true,
+                                        })
+                                        .header('Authorization', accessToken)
+                                        .json({ username: username });
+                                });
                             });
                         }
-                        // login
+                        // DB에 유저 존재 -> login
                         return res
                             .status(200)
                             .cookie('refreshToken', refreshToken, {
