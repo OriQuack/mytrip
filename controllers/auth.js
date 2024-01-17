@@ -29,7 +29,7 @@ exports.postLogin = (req, res, next) => {
             .compare(password, user.password)
             .then((doMatch) => {
                 if (doMatch) {
-                    const accessToken = generateToken.genAccessToken(email);
+                    const accessToken = generateToken.genAccessToken(user.username);
                     const refreshToken = generateToken.genRefreshToken();
                     return res
                         .status(200)
@@ -65,7 +65,7 @@ exports.postSignup = (req, res, next) => {
             return user.save();
         })
         .then((result) => {
-            const accessToken = generateToken.genAccessToken(email);
+            const accessToken = generateToken.genAccessToken(username);
             const refreshToken = generateToken.genRefreshToken();
             return res
                 .status(201)
@@ -203,7 +203,11 @@ exports.postUpdateUsername = (req, res, next) => {
     newUser
         .save()
         .then((result) => {
-            return res.status(200).json({ message: 'Username updated' });
+            const accessToken = generateToken.genAccessToken(username);
+            return res
+                .status(200)
+                .header('Authorization', accessToken)
+                .json({ message: 'Username updated' });
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Interner server error' });
@@ -268,8 +272,6 @@ exports.postGoogleLogin = (req, res) => {
                 .then((userinfo) => {
                     const email = userinfo.data.email;
                     User.getUserByEmail(email).then((user) => {
-                        const accessToken = generateToken.genAccessToken(email);
-                        const refreshToken = generateToken.genRefreshToken();
                         if (!user) {
                             // 첫 SNS 로그인 -> signup
                             const username = generator.generate({
@@ -293,6 +295,9 @@ exports.postGoogleLogin = (req, res) => {
                                     newUser
                                         .save()
                                         .then((result) => {
+                                            const accessToken =
+                                                generateToken.genAccessToken(username);
+                                            const refreshToken = generateToken.genRefreshToken();
                                             return res
                                                 .status(201)
                                                 .cookie('refreshToken', refreshToken, {
@@ -317,6 +322,8 @@ exports.postGoogleLogin = (req, res) => {
                                 });
                         } else {
                             // DB에 유저 존재 -> login
+                            const accessToken = generateToken.genAccessToken(user.username);
+                            const refreshToken = generateToken.genRefreshToken();
                             return res
                                 .status(200)
                                 .cookie('refreshToken', refreshToken, {
