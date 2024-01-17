@@ -18,6 +18,7 @@ const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 const refreshRoute = require('./routes/refreshToken');
 
+const OauthRoutes = require('./routes/Oauth');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
@@ -27,6 +28,9 @@ app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
 app.use(refreshRoute);
 
+app.use(authRoutes);
+app.use(planRoutes);
+app.use(OauthRoutes);
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
     // https.createServer(httpsOptions, app).listen(process.env.HTTPS_PORT); // https 서버

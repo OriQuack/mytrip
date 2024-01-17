@@ -8,6 +8,11 @@ const generator = require('generate-password');
 
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
+<<<<<<< HEAD
+=======
+
+const jwt = require('jsonwebtoken');
+>>>>>>> naver_auth
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
@@ -139,14 +144,45 @@ exports.postReset = (req, res, next) => {
             });
     });
 };
+<<<<<<< HEAD
 
 exports.postNewPassword = (req, res, next) => {
     //위에서 받은 token,userId로 유저 검사
+=======
+/*
+exports.getNewPassword = (req,res,next)=> {
+    const token= req.params.token;
+    console.log(token);
+    User.getUserByToken({resetToken: token}) 
+    .then(user=> {
+        //console.log(user);
+        if(user){    
+            console.log("token valid!");
+            res.send({    //new-password page 전송하는데 userId,token을 담아서 보내야됨
+                userId :user._id.toString(),
+                passwordToken:token
+                });
+        }
+        else{
+            console.log("invalid access!");
+            res.status(403);
+        }
+        
+    })
+    .catch(err=> {
+        console.log(err);
+        res.status(400);
+    })
+}
+*/
+exports.postNewPassword = (req,res,next)=> {  //위에서 받은 token,userId로 유저 검사
+>>>>>>> naver_auth
     //const username = req.body.username;
     var newPassword = req.body.password;
     const passwordToken = req.body.passwordToken;
     var hashedPassword = String;
 
+<<<<<<< HEAD
     User.getUserByToken({ resetToken: passwordToken })
         .then((user) => {
             if (user) {
@@ -350,3 +386,21 @@ exports.postGoogleLogin = (req, res) => {
             return res.status(500).json({ message: 'Google API server error' });
         });
 };
+=======
+    User.getUserByToken({resetToken:passwordToken})
+    .then(user=> {
+        if(user)
+            return bcrypt.hash(newPassword,12);
+        else
+            res.status(404);  
+    })
+    .then(hashedPassword=> {
+        User.updatePassword(req.body.userId,hashedPassword);
+        res.status(200);
+    })
+    .catch(err=> {
+        console.log(err);
+        res.redirect('/new-password');
+    })
+}
+>>>>>>> naver_auth
