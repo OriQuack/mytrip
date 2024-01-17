@@ -14,7 +14,7 @@ exports.NaverLogin = async (req,res,next) => {
     });
     const AccessToken = await response.json();   //토큰 받기
 
-    const res= await axios.get("https://openapi.naver.com/v1/nid/me", {
+    const info= await axios.get("https://openapi.naver.com/v1/nid/me", {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -22,12 +22,12 @@ exports.NaverLogin = async (req,res,next) => {
 
 
 
-    const email= res.email;
+    const email= info.email;
 
     User.getUserByEmail(email)
     .then(user=> {
-        const accessToken = generateToken.genAccessToken(email);
-        const refreshToken = generateToken.genRefreshToken(email);
+        const accessToken = generateToken.genAccessToken(user.username);
+        const refreshToken = generateToken.genRefreshToken(user.username);
         if(!user) {
             //signup generate id,pass
             const username=generator.generate({
