@@ -220,7 +220,7 @@ exports.postUpdateUsername = (req, res, next) => {
         username: username,
         email: email,
         password: password,
-        id: id,
+        _id: id,
     });
     newUser
         .save()

@@ -4,11 +4,11 @@ const { debugPort } = require('process');
 const getDb = require('../util/database').getDb;
 
 class User {
-    constructor({ username, email, password, id, resetToken, resetTokenExpiration }) {
+    constructor({ username, email, password, _id, resetToken, resetTokenExpiration }) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this._id = id ? id : null;
+        this._id = _id ? _id : null;
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
     }
