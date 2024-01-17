@@ -203,6 +203,7 @@ exports.postUpdateUsername = (req, res, next) => {
     newUser
         .save()
         .then((result) => {
+            // renew access token with new username
             const accessToken = generateToken.genAccessToken(username);
             return res
                 .status(200)
