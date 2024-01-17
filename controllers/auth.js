@@ -34,6 +34,7 @@ exports.postLogin = (req, res, next) => {
                     return res
                         .status(200)
                         .cookie('refreshToken', refreshToken, {
+                            expires: new Date(Date.now() + 259200),
                             httpOnly: true,
                         })
                         .header('Authorization', accessToken)
@@ -69,6 +70,7 @@ exports.postSignup = (req, res, next) => {
             return res
                 .status(201)
                 .cookie('refreshToken', refreshToken, {
+                    expires: new Date(Date.now() + 259200),
                     httpOnly: true,
                 })
                 .header('Authorization', accessToken)
@@ -298,6 +300,7 @@ exports.postGoogleLogin = (req, res) => {
                                             return res
                                                 .status(201)
                                                 .cookie('refreshToken', refreshToken, {
+                                                    expires: new Date(Date.now() + 259200),
                                                     httpOnly: true,
                                                 })
                                                 .header('Authorization', accessToken)
@@ -321,6 +324,7 @@ exports.postGoogleLogin = (req, res) => {
                             return res
                                 .status(200)
                                 .cookie('refreshToken', refreshToken, {
+                                    expires: new Date(Date.now() + 259200),
                                     httpOnly: true,
                                 })
                                 .header('Authorization', accessToken)

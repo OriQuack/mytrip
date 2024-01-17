@@ -66,6 +66,7 @@ router.get('/refresh', (req, res) => {
                                 return res
                                     .status(403)
                                     .cookie('refreshToken', refreshToken, {
+                                        expires: new Date(Date.now() + 259200),
                                         httpOnly: true,
                                     })
                                     .header('Authorization', newAccessToken)
