@@ -8,11 +8,8 @@ const generator = require('generate-password');
 
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
-<<<<<<< HEAD
-=======
 
 const jwt = require('jsonwebtoken');
->>>>>>> naver_auth
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
