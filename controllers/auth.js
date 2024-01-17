@@ -74,7 +74,7 @@ exports.postSignup = (req, res, next) => {
         });
 };
 
-exports.getReset = (req, res, next) => { };
+//exports.getReset = (req, res, next) => { };
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
