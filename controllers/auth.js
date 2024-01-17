@@ -6,7 +6,7 @@ const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const Users = require('../models/user');
 const generateToken = require('../util/generateToken');
-const bcrypt = require('bcryptjs');
+
 const jwt = require('jsonwebtoken');
 
 //전송 생성 메서드 호출
