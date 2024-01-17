@@ -125,7 +125,7 @@ exports.postReset = (req, res, next) => {
                     subject: 'Password reset',
                     html: `
                     <p>You requested a password reset</p>
-                    <p>Click this <a href="http://localhost:5173/auth/reset/${token}">link</a> to set a new password.</p>
+                    <p>Click this <a href="http://localhost:5173/auth/new-password/${token}">link</a> to set a new password.</p>
                     `,
                 });
 
@@ -139,31 +139,7 @@ exports.postReset = (req, res, next) => {
             });
     });
 };
-/*
-exports.getNewPassword = (req, res, next) => {
-    const token = req.params.token;
-    console.log(token);
-    User.getUserByToken({ resetToken: token })
-        .then((user) => {
-            //console.log(user);
-            if (user) {
-                console.log('token valid!');
-                res.send({
-                    //new-password page 전송하는데 userId,token을 담아서 보내야됨
-                    userId: user._id.toString(),
-                    passwordToken: token,
-                });
-            } else {
-                console.log('invalid access!');
-                res.status(403);
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(400);
-        });
-};
-*/
+
 exports.postNewPassword = (req, res, next) => {
     //위에서 받은 token,userId로 유저 검사
     //const username = req.body.username;
