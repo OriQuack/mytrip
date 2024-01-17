@@ -56,7 +56,11 @@ exports.postSignup = (req, res, next) => {
     bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
-            const user = new User(username, email, hashedPassword);
+            const user = new User({
+                username: username,
+                email: email,
+                password: hashedPassword,
+            });
             return user.save();
         })
         .then((result) => {
@@ -209,8 +213,18 @@ exports.postVerifyEmail = (req, res, next) => {
 
 exports.postUpdateUsername = (req, res, next) => {
     const username = req.body.username;
-    req.user
-        .updateUsername(username)
+    const email = req.user.email;
+    const password = req.user.password;
+    const id = req.user._id;
+
+    const newUser = new User({
+        username: username,
+        email: email,
+        password: password,
+        _id: id,
+    });
+    newUser
+        .save()
         .then((result) => {
             return res.status(200).json({ message: 'Username updated' });
         })
@@ -294,7 +308,11 @@ exports.postGoogleLogin = (req, res) => {
                             bcrypt
                                 .hash(password, 12)
                                 .then((hashedPassword) => {
-                                    const newUser = new User(username, email, hashedPassword);
+                                    const newUser = new User({
+                                        username: username,
+                                        email: email,
+                                        password: hashedPassword,
+                                    });
                                     newUser
                                         .save()
                                         .then((result) => {
