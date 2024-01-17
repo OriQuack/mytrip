@@ -216,12 +216,11 @@ exports.postUpdateUsername = (req, res, next) => {
     const email = req.user.email;
     const password = req.user.password;
     const id = req.user._id;
-
     const newUser = new User({
         username: username,
         email: email,
         password: password,
-        _id: id,
+        id: id,
     });
     newUser
         .save()

@@ -4,11 +4,11 @@ const { debugPort } = require('process');
 const getDb = require('../util/database').getDb;
 
 class User {
-    constructor(username, email, password, id, resetToken, resetTokenExpiration) {
+    constructor({ username, email, password, id, resetToken, resetTokenExpiration }) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this._id = id ? new mongodb.ObjectId(id) : null;
+        this._id = id ? id : null;
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
     }
@@ -19,7 +19,7 @@ class User {
             // User exists -> update user
             return db.collection('users').updateOne({ _id: this._id }, { $set: this });
         }
-        return db.collection('products').insertOne(this);
+        return db.collection('users').insertOne(this);
     }
 
     static deleteUser(userId) {
