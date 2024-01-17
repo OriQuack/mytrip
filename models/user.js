@@ -1,18 +1,24 @@
 const mongodb = require('mongodb');
+const { debugPort } = require('process');
 
 const getDb = require('../util/database').getDb;
 
 class User {
-    constructor(username, email, password, resetToken, resetTokenExpiration) {
+    constructor({ username, email, password, _id, resetToken, resetTokenExpiration }) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.resetToken = resetToken;
-        this.resetTokenExpiration = resetTokenExpiration;
+        this._id = _id ? _id : null;
+        this.resetToken = resetToken ? resetToken : null;
+        this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
     }
 
     save() {
         const db = getDb();
+        if (this._id) {
+            // User exists -> update user
+            return db.collection('users').updateOne({ _id: this._id }, { $set: this });
+        }
         return db.collection('users').insertOne(this);
     }
 
@@ -93,23 +99,22 @@ class User {
                 throw err;
             });
     }
-    
+
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
         var token = userToken.resetToken;
         return db
-        .collection('users')
-        .findOne({resetToken : token,resetTokenExpiration: {$gt:Date.now()}})
-        .then((user)=> {
-            console.log(user);
-            return user;
-        })
-        .catch(err=> {
-            console.log(err);
-        })
+            .collection('users')
+            .findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+            .then((user) => {
+                console.log(user);
+                return user;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
-    
 }
 
 module.exports = User;
