@@ -84,8 +84,7 @@ exports.postReset = (req, res, next) => {
         //create token
         if (err) {
             console.log(err);
-
-            res.redirect('/reset');
+            res.status(400).json({message:"error"});
         }
         const token = buffer.toString('hex');
 
@@ -116,7 +115,7 @@ exports.postReset = (req, res, next) => {
                     subject: 'Password reset',
                     html: `
                     <p>You requested a password reset</p>
-                    <p>Click this <a href="http://localhost:3000/auth/reset/${token}">link</a> to set a new password.</p>
+                    <p>Click this <a href="http://localhost:5173/auth/reset/${token}">link</a> to set a new password.</p>
                     `,
                 });
                 console.log('email send complete!');
@@ -126,11 +125,11 @@ exports.postReset = (req, res, next) => {
             })
             .catch((err) => {
                 console.log(err);
-                res.send(400);
+                res.send(400).json({message:'Bad Request'});
             });
     });
 };
-
+/*
 exports.getNewPassword = (req, res, next) => {
     const token = req.params.token;
     console.log(token);
@@ -154,28 +153,30 @@ exports.getNewPassword = (req, res, next) => {
             res.status(400);
         });
 };
-
-exports.postNewPassword = (req, res, next) => {
-    // 위에서 받은 token,userId로 유저 검사
-    // const username = req.body.username;
+*/
+exports.postNewPassword = (req,res,next)=> {  //위에서 받은 token,userId로 유저 검사
+    //const username = req.body.username;
     const newPassword = req.body.password;
     const passwordToken = req.body.passwordToken;
     resetUser = new User();
+    
+    User.getUserByToken({resetToken:passwordToken})
+    .then(user=> {
+        if(user)
+            return bcrypt.hash(newPassword,12);
+        else
+            res.status(404).json({message: 'Invalid token'});  //invalid token
+    })
+    .then(hashedPassword=> {
+        User.updatePassword(req.body.userId,hashedPassword);
+        res.status(200).json({message: "success"});
+    })
+    .catch(err=> {
+        console.log(err);
+        res.status(400).json({message: 'Bad Request'});
+    })
+}
 
-    User.getUserByToken({ resetToken: passwordToken })
-        .then((user) => {
-            if (user) return bcrypt.hash(newPassword, 12);
-            else res.status(404);
-        })
-        .then((hashedPassword) => {
-            User.updatePassword(req.body.userId, hashedPassword);
-            res.status(200);
-        })
-        .catch((err) => {
-            console.log(err);
-            res.redirect('/new-password');
-        });
-};
 
 exports.postVerifyUsername = (req, res, next) => {
     const username = req.body.username;
