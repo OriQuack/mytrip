@@ -1,6 +1,6 @@
 exports.NaverLogin = async (req, res, next) => {
-    code = req.query.code; //프론트에서 code,state 받아야 됨
-    state = req.query.state;
+    code = req.body.code; //프론트에서 code,state 받아야 됨
+    state = req.body.state;
     const client_id = process.env.VITE_NAVER_CLIENTID;
     const client_secret = process.env.VITE_NAVER_SECRETKEY;
     api_url =
@@ -22,7 +22,7 @@ exports.NaverLogin = async (req, res, next) => {
         },
     });
     const AccessToken = await response.json();   //토큰 받기
-
+    console.log("got token!");
     const info= await axios.get("https://openapi.naver.com/v1/nid/me", {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -76,5 +76,5 @@ exports.NaverLogin = async (req, res, next) => {
         console.log(err);
         return res.status(500).json({message: 'Naver API Server error'});
     })
-    //return res.send(tokenRequest);
+    
 }

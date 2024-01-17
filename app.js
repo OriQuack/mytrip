@@ -26,11 +26,11 @@ app.use(corsOptions);
 
 app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
+app.use('/Oauth',OauthRoutes);
 app.use(refreshRoute);
-
-app.use(authRoutes);
-app.use(planRoutes);
-app.use(OauthRoutes);
+//app.use(authRoutes);
+//app.use(planRoutes);
+//app.use(OauthRoutes);
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
     // https.createServer(httpsOptions, app).listen(process.env.HTTPS_PORT); // https 서버
