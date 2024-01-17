@@ -259,10 +259,10 @@ exports.postGoogleLogin = (req, res) => {
     const code = req.body.code;
     axios
         .post('https://oauth2.googleapis.com/token', {
-            client_id: process.env.VITE_GOOGLE_CLIENTID,
-            client_secret: process.env.VITE_GOOGLE_SECRETKEY,
+            client_id: process.env.GOOGLE_CLIENTID,
+            client_secret: process.env.GOOGLE_SECRETKEY,
             code,
-            redirect_uri: process.env.VITE_GOOGLE_REDIRECTURL,
+            redirect_uri: process.env.GOOGLE_REDIRECTURL,
             grant_type: 'authorization_code',
         })
         .then((result) => {
