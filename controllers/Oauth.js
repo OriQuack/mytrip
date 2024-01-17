@@ -33,8 +33,8 @@ exports.NaverLogin = async (req, res, next) => {
 
     User.getUserByEmail(email)
         .then((user) => {
-            const accessToken = generateToken.genAccessToken(email);
-            const refreshToken = generateToken.genRefreshToken(email);
+            const accessToken = generateToken.genAccessToken(user.username);
+            const refreshToken = generateToken.genRefreshToken(user.username);
             if (!user) {
                 //signup generate id,pass
                 const username = generator.generate({
