@@ -139,31 +139,27 @@ exports.postReset = (req, res, next) => {
     });
 };
 
-
-
-exports.postNewPassword = (req,res,next)=> {  //위에서 받은 token,userId로 유저 검사
+exports.postNewPassword = (req, res, next) => {
+    //위에서 받은 token,userId로 유저 검사
     //const username = req.body.username;
     const newPassword = req.body.password;
     const passwordToken = req.body.passwordToken;
     resetUser = new User();
-    
-    User.getUserByToken({resetToken:passwordToken})
-    .then(user=> {
-        if(user)
-            return bcrypt.hash(newPassword,12);
-        else
-            res.status(404).json({message: 'Invalid token'});  //invalid token
-    })
-    .then(hashedPassword=> {
-        User.updatePassword(req.body.userId,hashedPassword);
-        res.status(200).json({message: "success"});
-    })
-    .catch(err=> {
-        console.log(err);
-        res.status(400).json({message: 'Bad Request'});
-    })
-}
 
+    User.getUserByToken({ resetToken: passwordToken })
+        .then((user) => {
+            if (user) return bcrypt.hash(newPassword, 12);
+            else res.status(404).json({ message: 'Invalid token' }); //invalid token
+        })
+        .then((hashedPassword) => {
+            User.updatePassword(req.body.userId, hashedPassword);
+            res.status(200).json({ message: 'success' });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(400).json({ message: 'Bad Request' });
+        });
+};
 
 exports.postVerifyUsername = (req, res, next) => {
     const username = req.body.username;
