@@ -61,7 +61,7 @@ router.get('/refresh', (req, res) => {
                                 }
                                 // AT expired && RT valid -> AT 재발급
                                 const newAccessToken = generateToken.genAccessToken(
-                                    accessDecoded.payload.userEmail
+                                    accessDecoded.payload.username
                                 );
                                 return res
                                     .status(403)
@@ -77,7 +77,7 @@ router.get('/refresh', (req, res) => {
                 );
             } else {
                 // AT valid
-                User.getUserByEmail(accessDecoded.payload.userEmail).then((user) => {
+                User.getUserByUsername(accessDecoded.payload.username).then((user) => {
                     if (!user) {
                         return res.status(404).json({ message: 'User not found' });
                     }
