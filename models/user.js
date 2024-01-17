@@ -36,13 +36,14 @@ class User {
 
     static updatePassword(userId, hashedPassword) {
         const db = getDb();
+        console.log(hashedPassword);
         return db.collection('users').updateOne(
             { _id: new mongodb.ObjectId(userId) },
             {
                 $set: {
                     password: hashedPassword,
                     resetToken: undefined,
-                    resetTokenExpriation: undefined,
+                    resetTokenExpiration: undefined,
                 },
             }
         );
@@ -93,7 +94,7 @@ class User {
                 throw err;
             });
     }
-    /*
+    
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
@@ -109,7 +110,7 @@ class User {
             console.log(err);
         })
     }
-    */
+    
 }
 
 module.exports = User;
