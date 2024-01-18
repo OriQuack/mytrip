@@ -10,7 +10,6 @@ const User = require('../models/user');
 const generateToken = require('../util/generateToken');
 
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
@@ -353,6 +352,7 @@ exports.postGoogleLogin = (req, res) => {
             return res.status(500).json({ message: 'Google API server error' });
         });
 };
+
 exports.postKakaoAuth = async (req, res, next) => {
     const authCode = req.query.code; //쿼리 스트링에서 인가 코드 추출
     //authCode를 사용하여 토큰 요청
@@ -377,9 +377,74 @@ exports.postKakaoAuth = async (req, res, next) => {
             }
         });
         console.log("User information successfully received");
-        console.log(userInfoResponse.data);
+        console.log(userInfoResponse.data.id);
 
-        res.status(200).send(`..`);
+        const kakaoId = userInfoResponse.data.id;
+        const email = userInfoResponse.data.kakao_account.email;
+        User.getUserByKakaoId(kakaoId).then((user) => {
+            if (!user) { //Signup
+                console.log("Kakao sign up");
+                const username = generator.generate({
+                    length: 8,
+                    numbers: true,
+                });
+                const password = generator.generate({
+                    length: 14,
+                    numbers: true,
+                    symbols: true,
+                    strict: true,
+                });
+                bcrypt
+                    .hash(password, 12)
+                    .then((hashedPassword) => {
+                        const newUser = new User({
+                            username: username,
+                            email: email,
+                            password: hashedPassword,
+                            kakaoId: kakaoId,
+                        });
+                        newUser
+                            .save()
+                            .then((result) => {
+                                const accessToken =
+                                    generateToken.genAccessToken(username);
+                                const refreshToken = generateToken.genRefreshToken();
+                                return res
+                                    .status(201)
+                                    .cookie('refreshToken', refreshToken, {
+                                        expires: new Date(Date.now() + 259200),
+                                        httpOnly: true,
+                                    })
+                                    .header('Authorization', accessToken)
+                                    .json({ username: username });
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                                return res
+                                    .status(500)
+                                    .json({ message: 'Internal server error' });
+                            });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        return res
+                            .status(500)
+                            .json({ message: 'Internal server error' });
+                    });
+            } else { //Login
+                console.log("kakao login");
+                const accessToken = generateToken.genAccessToken(user.username);
+                const refreshToken = generateToken.genRefreshToken();
+                return res
+                    .status(200)
+                    .cookie('refreshToken', refreshToken, {
+                        expires: new Date(Date.now() + 259200),
+                        httpOnly: true,
+                    })
+                    .header('Authorization', accessToken)
+                    .json({ username: user.username });
+            }
+        });
     } catch (error) {
         console.log(error.message);
         res.status(500).send(`Error retrieving token: ${error.message}`);
