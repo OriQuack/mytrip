@@ -6,6 +6,8 @@ const sendgridTransport = require('nodemailer-sendgrid-transport');
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
 
+const axios = require('axios');
+
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
     sendgridTransport({
@@ -236,4 +238,37 @@ exports.deleteUserData = (req, res, next) => {
         .catch((err) => {
             return res.status(500).json({ message: 'Internal Server Error' });
         });
+};
+
+exports.postKakaoAuth = async (req, res, next) => {
+    const authCode = req.query.code; //쿼리 스트링에서 인가 코드 추출
+    //authCode를 사용하여 토큰 요청
+    try {
+        const tokenResponse = await axios.post('https://kauth.kakao.com/oauth/token', null, {
+            params: {
+                grant_type: 'authorization_code',
+                client_id: process.env.KAKAO_REST_API_KEY,
+                redirect_uri: process.env.KAKAO_REDIRECT_URL,
+                code: authCode
+            }
+        })
+
+        const accessToken = tokenResponse.data.access_token;
+        console.log("token successfully received");
+        console.log(accessToken);
+
+        //사용자 정보 받아오기
+        const userInfoResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        console.log("User information successfully received");
+        console.log(userInfoResponse.data);
+
+        res.status(200).send(`..`);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send(`Error retrieving token: ${error.message}`);
+    }
 };

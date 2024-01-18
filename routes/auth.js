@@ -23,4 +23,7 @@ router.post('/verify/email', authController.postVerifyEmail);
 
 router.delete('/signout', authenticate, authController.deleteUserData);
 
+//Kakao login
+router.post('/kakao', authController.postKakaoAuth);
+
 module.exports = router;
