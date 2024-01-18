@@ -200,11 +200,13 @@ exports.postUpdateUsername = (req, res, next) => {
     const email = req.user.email;
     const password = req.user.password;
     const id = req.user._id;
+    const kakaoId = req.user.kakaoId;
     const newUser = new User({
         username: username,
         email: email,
         password: password,
         _id: id,
+        kakaoId: kakaoId,
     });
     newUser
         .save()
