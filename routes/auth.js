@@ -22,5 +22,7 @@ router.post('/updateUsername', authenticate, authController.postUpdateUsername);
 router.delete('/signout', authenticate, authController.deleteUserData);
 
 router.post('/google', authController.postGoogleLogin);
+//Kakao login
+router.post('/kakao', authController.postKakaoAuth);
 
 module.exports = router;
