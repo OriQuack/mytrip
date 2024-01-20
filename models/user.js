@@ -82,11 +82,11 @@ class User {
             });
     }
 
-    static deleteUserByEmail(email) {
+    static deleteUserByUsername(username) {
         const db = getDb();
         return db
             .collection('users')
-            .deleteOne({ email: email }) // Changed userEmail to email
+            .deleteOne({ username: username })
             .then((result) => {
                 if (result.deletedCount === 1) {
                     console.log('User successfully deleted');

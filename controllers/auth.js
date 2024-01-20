@@ -84,7 +84,7 @@ exports.postSignup = (req, res, next) => {
         });
 };
 
-exports.getReset = (req, res, next) => { };
+exports.getReset = (req, res, next) => {};
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
@@ -224,35 +224,13 @@ exports.postUpdateUsername = (req, res, next) => {
 };
 
 exports.deleteUserData = (req, res, next) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    User.getUserByEmail(email)
-        .then((user) => {
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+    const username = req.user.username;
+    User.deleteUserByUsername(username)
+        .then((result) => {
+            if (result === 1) {
+                return res.status(200).json({ message: 'User successfully deleted' });
             }
-            bcrypt
-                .compare(password, user.password)
-                .then((doMatch) => {
-                    if (doMatch) {
-                        User.deleteUserByEmail(email).then((result) => {
-                            if (result === 1) {
-                                return res
-                                    .status(200)
-                                    .json({ message: 'User successfully deleted' });
-                            }
-                            return res
-                                .status(404)
-                                .json({ message: 'Error in deleting user: user not found' });
-                        });
-                    } else {
-                        return res.status(401).json({ message: 'Incorrect password' });
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                    return res.status(400).json({ message: 'Bad request' });
-                });
+            return res.status(404).json({ message: 'Error in deleting user: user not found' });
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Internal server error' });
@@ -283,10 +261,12 @@ exports.postGoogleLogin = (req, res) => {
                     User.getUserByEmail(email).then((user) => {
                         if (!user) {
                             // 첫 SNS 로그인 -> signup
-                            const username = '여행자' + generator.generate({
-                                length: 8,
-                                numbers: true,
-                            });
+                            const username =
+                                '여행자' +
+                                generator.generate({
+                                    length: 8,
+                                    numbers: true,
+                                });
                             const password = generator.generate({
                                 length: 14,
                                 numbers: true,
@@ -364,28 +344,29 @@ exports.postKakaoAuth = async (req, res, next) => {
                 grant_type: 'authorization_code',
                 client_id: process.env.KAKAO_REST_API_KEY,
                 redirect_uri: process.env.KAKAO_REDIRECT_URL,
-                code: authCode
-            }
-        })
+                code: authCode,
+            },
+        });
 
         const accessToken = tokenResponse.data.access_token;
-        console.log("token successfully received");
+        console.log('token successfully received');
         console.log(accessToken);
 
         //사용자 정보 받아오기
         const userInfoResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
             headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
+                Authorization: `Bearer ${accessToken}`,
+            },
         });
-        console.log("User information successfully received");
+        console.log('User information successfully received');
         console.log(userInfoResponse.data.id);
 
         const kakaoId = userInfoResponse.data.id;
         const email = userInfoResponse.data.kakao_account.email;
         User.getUserByKakaoId(kakaoId).then((user) => {
-            if (!user) { //Signup
-                console.log("Kakao sign up");
+            if (!user) {
+                //Signup
+                console.log('Kakao sign up');
                 const username = generator.generate({
                     length: 8,
                     numbers: true,
@@ -408,8 +389,7 @@ exports.postKakaoAuth = async (req, res, next) => {
                         newUser
                             .save()
                             .then((result) => {
-                                const accessToken =
-                                    generateToken.genAccessToken(username);
+                                const accessToken = generateToken.genAccessToken(username);
                                 const refreshToken = generateToken.genRefreshToken();
                                 return res
                                     .status(201)
@@ -422,19 +402,16 @@ exports.postKakaoAuth = async (req, res, next) => {
                             })
                             .catch((err) => {
                                 console.log(err);
-                                return res
-                                    .status(500)
-                                    .json({ message: 'Internal server error' });
+                                return res.status(500).json({ message: 'Internal server error' });
                             });
                     })
                     .catch((err) => {
                         console.log(err);
-                        return res
-                            .status(500)
-                            .json({ message: 'Internal server error' });
+                        return res.status(500).json({ message: 'Internal server error' });
                     });
-            } else { //Login
-                console.log("kakao login");
+            } else {
+                //Login
+                console.log('kakao login');
                 const accessToken = generateToken.genAccessToken(user.username);
                 const refreshToken = generateToken.genRefreshToken();
                 return res
