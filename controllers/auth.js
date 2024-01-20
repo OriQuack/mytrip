@@ -283,7 +283,7 @@ exports.postGoogleLogin = (req, res) => {
                     User.getUserByEmail(email).then((user) => {
                         if (!user) {
                             // 첫 SNS 로그인 -> signup
-                            const username = generator.generate({
+                            const username = '여행자' + generator.generate({
                                 length: 8,
                                 numbers: true,
                             });
