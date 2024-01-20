@@ -49,8 +49,8 @@ class User {
             {
                 $set: {
                     password: hashedPassword,
-                    resetToken: undefined,
-                    resetTokenExpiration: undefined,
+                    resetToken: null,
+                    resetTokenExpiration: null,
                 },
             }
         );
