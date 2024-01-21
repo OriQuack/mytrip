@@ -66,6 +66,7 @@ class User {
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
     }
 
@@ -79,6 +80,7 @@ class User {
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
     }
 
