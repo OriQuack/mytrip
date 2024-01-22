@@ -107,10 +107,12 @@ exports.postReset = (req, res, next) => {
                         isSend: false,
                     });
                 }
-                user.updateUserToken(token, resetTokenExpiration)
+                const updatingUser = new User(user);
+                updatingUser
+                    .updateUserToken(token, resetTokenExpiration)
                     .then((result) => {
                         transporter.sendMail({
-                            to: user.email,
+                            to: updatingUser.email,
                             from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
                             subject: 'Password reset',
                             html: `
@@ -124,12 +126,12 @@ exports.postReset = (req, res, next) => {
                     })
                     .catch((err) => {
                         console.log(err);
-                        res.status(500).json({ message: 'Interner server error' });
+                        return res.status(500).json({ message: 'Interner server error' });
                     });
             })
             .catch((err) => {
                 console.log(err);
-                res.send(400).json({ message: 'Bad request' });
+                return res.status(400).json({ message: 'Bad request' });
             });
     });
 };
@@ -141,12 +143,13 @@ exports.postNewPassword = (req, res, next) => {
     User.getUserByToken({ resetToken: passwordToken })
         .then((user) => {
             if (user) {
+                const updatingUser = new User(user);
                 bcrypt.hash(newPassword, 12).then((password) => {
-                    user.updatePassword(password);
+                    updatingUser.updatePassword(password);
                     return res.status(200).json({ message: 'Success' });
                 });
             } else {
-                console.log('user not found!');
+                console.log('User not found!');
                 return res.status(404).json({ message: 'Invalid token' });
             }
         })
@@ -401,6 +404,6 @@ exports.postKakaoAuth = async (req, res, next) => {
         });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send(`Error retrieving token: ${error.message}`);
+        res.status(500).json(`Error retrieving token: ${error.message}`);
     }
 };
