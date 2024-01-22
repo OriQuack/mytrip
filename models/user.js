@@ -29,37 +29,22 @@ class User {
         return this.save();
     }
 
+    updateUserToken(resetToken, resetTokenExpiration) {
+        this.resetToken = resetToken;
+        this.resetTokenExpiration = resetTokenExpiration;
+        return this.save();
+    }
+
+    updatePassword(hashedPassword) {
+        this.password = hashedPassword;
+        this.resetToken = null;
+        this.resetTokenExpiration = null;
+        return this.save();
+    }
+
     deleteUser() {
         const db = getDb();
         return db.collection('users').deleteOne({ _id: new mongodb.ObjectId(this._id) });
-    }
-
-    static updateUserToken(userId, resetToken, resetTokenExpiration) {
-        const db = getDb();
-        return db.collection('users').updateOne(
-            { _id: new mongodb.ObjectId(userId) },
-            {
-                $set: {
-                    resetToken: resetToken,
-                    resetTokenExpiration: resetTokenExpiration,
-                },
-            }
-        );
-    }
-
-    static updatePassword(userId, hashedPassword) {
-        const db = getDb();
-        console.log(hashedPassword);
-        return db.collection('users').updateOne(
-            { _id: new mongodb.ObjectId(userId) },
-            {
-                $set: {
-                    password: hashedPassword,
-                    resetToken: null,
-                    resetTokenExpiration: null,
-                },
-            }
-        );
     }
 
     static getUserByEmail(userEmail) {
@@ -72,26 +57,6 @@ class User {
         return db.collection('users').findOne({ username: username });
     }
 
-    // static deleteUserByUsername(username) {
-    //     const db = getDb();
-    //     return db
-    //         .collection('users')
-    //         .deleteOne({ username: username })
-    //         .then((result) => {
-    //             if (result.deletedCount === 1) {
-    //                 console.log('User successfully deleted');
-    //                 return 1;
-    //             } else {
-    //                 console.log('Error in deleting a user');
-    //                 return 0;
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //             throw err;
-    //         });
-    // }
-
     static getUserByToken(userToken) {
         const db = getDb();
         console.log(userToken);
@@ -100,11 +65,11 @@ class User {
             .collection('users')
             .findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
             .then((user) => {
-                console.log(user);
                 return user;
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
     }
 

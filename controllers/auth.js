@@ -25,7 +25,7 @@ exports.postLogin = (req, res, next) => {
     const password = req.body.password;
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.status(404).json({ message: 'User not found!' });
+            return res.status(404).json({ message: 'User not found' });
         }
         bcrypt
             .compare(password, user.password)
@@ -93,76 +93,66 @@ exports.postReset = (req, res, next) => {
         //create token
         if (err) {
             console.log(err);
-            res.status(400).json({ message: 'error' });
+            res.status(500).json({ message: 'Interner server error' });
         }
         const token = buffer.toString('hex');
+        const resetTokenExpiration = Date.now() + 3600000;
 
         //found user by email and set token
         User.getUserByEmail(req.body.email)
             .then((user) => {
                 if (!user) {
-                    req.flash('error', 'No account with the email');
-                    return res.send({
+                    return res.status(404).json({
+                        message: 'User not found',
                         isSend: false,
                     });
                 }
-
-                user.resetToken = token;
-                user.resetTokenExpriation = Date.now() + 3600000;
-                return user;
-            })
-            .then((user) => {
-                User.updateUserToken(user._id, user.resetToken, user.resetTokenExpriation);
-
-                return user;
-            })
-            .then((user) => {
-                //check
-                //send email
-
-                transporter.sendMail({
-                    to: user.email,
-                    from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
-                    subject: 'Password reset',
-                    html: `
-                    <p>You requested a password reset</p>
-                    <p>Click this <a href="http://localhost:5173/auth/new-password/${token}">link</a> to set a new password.</p>
-                    `,
-                });
-
-                res.send({
-                    isSend: true,
-                });
+                user.updateUserToken(token, resetTokenExpiration)
+                    .then((result) => {
+                        transporter.sendMail({
+                            to: user.email,
+                            from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
+                            subject: 'Password reset',
+                            html: `
+                        <p>You requested a password reset</p>
+                        <p>Click this <a href="http://localhost:5173/auth/new-password/${token}">link</a> to set a new password.</p>
+                        `,
+                        });
+                        return res.status(200).json({
+                            isSend: true,
+                        });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        res.status(500).json({ message: 'Interner server error' });
+                    });
             })
             .catch((err) => {
                 console.log(err);
-                res.send(400).json({ message: 'Bad Request' });
+                res.send(400).json({ message: 'Bad request' });
             });
     });
 };
 
 exports.postNewPassword = (req, res, next) => {
     //위에서 받은 token,userId로 유저 검사
-    //const username = req.body.username;
-    var newPassword = req.body.password;
+    const newPassword = req.body.password;
     const passwordToken = req.body.passwordToken;
-    var hashedPassword = String;
-
     User.getUserByToken({ resetToken: passwordToken })
         .then((user) => {
             if (user) {
                 bcrypt.hash(newPassword, 12).then((password) => {
-                    User.updatePassword(user._id, password);
-                    res.status(200).json({ message: 'success' });
+                    user.updatePassword(password);
+                    return res.status(200).json({ message: 'Success' });
                 });
             } else {
                 console.log('user not found!');
-                res.status(404).json({ message: 'Invalid token' }); //invalid token
+                return res.status(404).json({ message: 'Invalid token' });
             }
         })
         .catch((err) => {
             console.log(err);
-            res.status(400).json({ message: 'Bad Request' });
+            return res.status(400).json({ message: 'Bad request' });
         });
 };
 
