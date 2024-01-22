@@ -3,20 +3,18 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Plan {
-    constructor({ name, _id, ownerId, city, time: date, likes, totalCost, isPublic, schedule }) {
-        this.name = name;
+    constructor({ _id, name, ownerId, city, time: date, likes, isPublic, schedule }) {
         this._id = _id ? _id : null;
+        this.name = name;
         this.ownerId = ownerId;
         this.city = city;
         this.date = date; // 날짜
-        this.period = period; // 며칠동안
+        // this.period = -> 날짜에 따라 계산 TODO
         // this.season = -> 날짜에 따라 계산 TODO
         this.likes = likes ? likes : 0;
-        this.views = views ? views : 0;
         this.scraps = scraps ? scraps : 0;
-        this.totalCost = totalCost;
+        // this.totalCost = -> schedule 따라 계산 TODO
         this.isPublic = isPublic;
-        this.isComplete = isComplete;
         this.schedule = schedule;
     }
 
@@ -31,16 +29,7 @@ class Plan {
 
     static getPlanById(id) {
         const db = getDb();
-        return db
-            .collection('plans')
-            .findOne({ _id: id })
-            .then((plan) => {
-                return plan;
-            })
-            .catch((err) => {
-                console.log(err);
-                throw new Error(err);
-            });
+        return db.collection('plans').findOne({ _id: id });
     }
 }
 
