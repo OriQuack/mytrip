@@ -55,7 +55,6 @@ exports.postSignup = (req, res, next) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-
     bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
@@ -197,19 +196,8 @@ exports.postVerifyEmail = (req, res, next) => {
 
 exports.postUpdateUsername = (req, res, next) => {
     const username = req.body.username;
-    const email = req.user.email;
-    const password = req.user.password;
-    const id = req.user._id;
-    const kakaoId = req.user.kakaoId;
-    const newUser = new User({
-        username: username,
-        email: email,
-        password: password,
-        _id: id,
-        kakaoId: kakaoId,
-    });
-    newUser
-        .save()
+    req.user
+        .updateUsername(username)
         .then((result) => {
             // renew access token with new username
             const accessToken = generateToken.genAccessToken(username);

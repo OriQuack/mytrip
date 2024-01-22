@@ -7,4 +7,6 @@ const router = express.Router();
 
 router.get('/', planController.getIndex); // 임시 메인 페이지
 
+router.get('/protected', authenticate, planController.getProtected);
+
 module.exports = router;

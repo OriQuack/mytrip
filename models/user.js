@@ -1,4 +1,5 @@
 const mongodb = require('mongodb');
+const DKIM = require('nodemailer/lib/dkim');
 const { debugPort } = require('process');
 
 const getDb = require('../util/database').getDb;
@@ -21,6 +22,12 @@ class User {
             return db.collection('users').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('users').insertOne(this);
+    }
+
+    updateUsername(username) {
+        const db = getDb();
+        this.username = username;
+        return this.save();
     }
 
     static deleteUser(userId) {
@@ -132,7 +139,6 @@ class User {
                 console.log(err);
             });
     }
-
 }
 
 module.exports = User;
