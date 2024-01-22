@@ -25,14 +25,13 @@ class User {
     }
 
     updateUsername(username) {
-        const db = getDb();
         this.username = username;
         return this.save();
     }
 
-    static deleteUser(userId) {
+    deleteUser() {
         const db = getDb();
-        return db.collection('users').deleteOne({ _id: new mongodb.ObjectId(userId) });
+        return db.collection('users').deleteOne({ _id: new mongodb.ObjectId(this._id) });
     }
 
     static updateUserToken(userId, resetToken, resetTokenExpiration) {
@@ -65,51 +64,33 @@ class User {
 
     static getUserByEmail(userEmail) {
         const db = getDb();
-        return db
-            .collection('users')
-            .findOne({ email: userEmail })
-            .then((user) => {
-                return user;
-            })
-            .catch((err) => {
-                console.log(err);
-                throw new Error(err);
-            });
+        return db.collection('users').findOne({ email: userEmail });
     }
 
     static getUserByUsername(username) {
         const db = getDb();
-        return db
-            .collection('users')
-            .findOne({ username: username })
-            .then((user) => {
-                return user;
-            })
-            .catch((err) => {
-                console.log(err);
-                throw new Error(err);
-            });
+        return db.collection('users').findOne({ username: username });
     }
 
-    static deleteUserByUsername(username) {
-        const db = getDb();
-        return db
-            .collection('users')
-            .deleteOne({ username: username })
-            .then((result) => {
-                if (result.deletedCount === 1) {
-                    console.log('User successfully deleted');
-                    return 1;
-                } else {
-                    console.log('Error in deleting a user');
-                    return 0;
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                throw err;
-            });
-    }
+    // static deleteUserByUsername(username) {
+    //     const db = getDb();
+    //     return db
+    //         .collection('users')
+    //         .deleteOne({ username: username })
+    //         .then((result) => {
+    //             if (result.deletedCount === 1) {
+    //                 console.log('User successfully deleted');
+    //                 return 1;
+    //             } else {
+    //                 console.log('Error in deleting a user');
+    //                 return 0;
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.log(err);
+    //             throw err;
+    //         });
+    // }
 
     static getUserByToken(userToken) {
         const db = getDb();

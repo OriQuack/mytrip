@@ -212,13 +212,10 @@ exports.postUpdateUsername = (req, res, next) => {
 };
 
 exports.deleteUserData = (req, res, next) => {
-    const username = req.user.username;
-    User.deleteUserByUsername(username)
+    req.user
+        .deleteUser()
         .then((result) => {
-            if (result === 1) {
-                return res.status(200).json({ message: 'User successfully deleted' });
-            }
-            return res.status(404).json({ message: 'Error in deleting user: user not found' });
+            return res.status(200).json({ message: 'User successfully deleted' });
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Internal server error' });
