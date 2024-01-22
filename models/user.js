@@ -59,8 +59,7 @@ class User {
 
     static getUserByToken(userToken) {
         const db = getDb();
-        console.log(userToken);
-        var token = userToken.resetToken;
+        const token = userToken.resetToken;
         return db
             .collection('users')
             .findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })

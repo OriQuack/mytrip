@@ -90,7 +90,6 @@ exports.postReset = (req, res, next) => {
     //---> 유저가 이메일로 받은 링크로 접속시, 그 링크에 있는 토큰과 디비에 저장해놨던 토큰을 비교해서 유저임을 검증
     //--->why?: 다른 유저가 대충 url떄려맞춰서 비번 마음대로 바꿀 수 있음.
     crypto.randomBytes(32, (err, buffer) => {
-        //create token
         if (err) {
             console.log(err);
             res.status(500).json({ message: 'Interner server error' });
@@ -98,7 +97,6 @@ exports.postReset = (req, res, next) => {
         const token = buffer.toString('hex');
         const resetTokenExpiration = Date.now() + 3600000;
 
-        //found user by email and set token
         User.getUserByEmail(req.body.email)
             .then((user) => {
                 if (!user) {
@@ -137,7 +135,6 @@ exports.postReset = (req, res, next) => {
 };
 
 exports.postNewPassword = (req, res, next) => {
-    //위에서 받은 token,userId로 유저 검사
     const newPassword = req.body.password;
     const passwordToken = req.body.passwordToken;
     User.getUserByToken({ resetToken: passwordToken })
@@ -149,7 +146,6 @@ exports.postNewPassword = (req, res, next) => {
                     return res.status(200).json({ message: 'Success' });
                 });
             } else {
-                console.log('User not found!');
                 return res.status(404).json({ message: 'Invalid token' });
             }
         })
