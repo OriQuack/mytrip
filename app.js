@@ -8,8 +8,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoConnect = require('./util/database').mongoConnect;
 
-const User = require('./models/user');
-
 const app = express();
 
 // const httpsOptions = require('./config/key_config').options;
@@ -26,11 +24,9 @@ app.use(corsOptions);
 
 app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
-app.use('/Oauth',OauthRoutes);
+app.use('/Oauth', OauthRoutes);
 app.use(refreshRoute);
-//app.use(authRoutes);
-//app.use(planRoutes);
-//app.use(OauthRoutes);
+
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
     // https.createServer(httpsOptions, app).listen(process.env.HTTPS_PORT); // https 서버
