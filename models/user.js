@@ -89,12 +89,12 @@ class User {
             });
     }
 
-    addLikedPlan(planId) {
+    addLikedPlan(planId) { //planId는 ObjectId 타입이어야 한다.
         this.likedPlans.push(planId);
         return this.save();
     }
 
-    removeLikedPlan(planId) {
+    removeLikedPlan(planId) { //planId는 ObjectId 타입이어야 한다.
         this.likedPlans = this.likedPlans.filter(id => !id.equals(planId));
         return this.save();
     }
@@ -114,8 +114,8 @@ class User {
         return this.save();
     }
 
-    removeScrapPlan(planId) {
-        this.scrapPlans = this.scrapPlans.filter(plan => plan.planId !== planId);
+    removeScrapPlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.scrapPlans = this.scrapPlans.filter(plan => !plan.planId.equals(planId));
         return this.save();
     }
 
@@ -134,8 +134,8 @@ class User {
         return this.save();
     }
 
-    removePlan(planId) {
-        this.myPlans = this.myPlans.filter(plan => plan.planId !== planId);
+    removePlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.myPlans = this.myPlans.filter(plan => !plan.planId.equals(planId));
         return this.save();
     }
 }

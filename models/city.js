@@ -5,7 +5,7 @@ class City {
     constructor({ _id, name, planCount, plans = [] }) {
         this._id = _id ? new mongodb.ObjectId(_id) : null;
         this.name = name;
-        this.planCount = planCount;
+        this.planCount = planCount || plans.length;
         this.plans = plans;
     }
 
@@ -16,11 +16,6 @@ class City {
             return db.collection('cities').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('cities').insertOne(this);
-    }
-
-    updatePlanCount() {
-        this.planCount = this.plans.length;
-        return this.save();
     }
 
     static getCityById(id) {
@@ -38,13 +33,13 @@ class City {
             scraps: planData.scraps
         };
         this.plans.push(planSummary);
-        this.updatePlanCount();
+        this.planCount = this.plans.length;
         return this.save();
     }
 
-    removePlan(planId) {
-        this.plans = this.plans.filter(plan => plan.planId !== planId);
-        this.updatePlanCount();
+    removePlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.plans = this.plans.filter(plan => !plan.planId.equals(planId));
+        this.planCount = this.plans.length;
         return this.save();
     }
 }
