@@ -1,11 +1,12 @@
 const mongodb = require('mongodb');
+const Plan = require('./plan');
 const DKIM = require('nodemailer/lib/dkim');
 const { debugPort } = require('process');
 
 const getDb = require('../util/database').getDb;
 
 class User {
-    constructor({ username, email, password, _id, kakaoId, resetToken, resetTokenExpiration }) {
+    constructor({ username, email, password, _id, kakaoId, resetToken, resetTokenExpiration, likedPlans = [], scrapPlans = [], myPlans = [] }) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -13,6 +14,9 @@ class User {
         this.kakaoId = kakaoId ? kakaoId : null;
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
+        this.likedPlans = likedPlans;
+        this.scrapPlans = scrapPlans;
+        this.myPlans = myPlans.map(planData => new Plan(planData));
     }
 
     save() {
@@ -82,8 +86,41 @@ class User {
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
     }
+
+    addLikedPlan(planId) {
+        this.likedPlans.push(planId);
+        return this.save();
+    }
+
+    removeLikedPlan(planId) {
+        this.likedPlans = this.likedPlans.filter(id => !id.equals(planId));
+        return this.save();
+    }
+
+    addScrapPlan(planId) {
+        this.scrapPlans.push(planId);
+        return this.save();
+    }
+
+    removeScrapPlan(planId) {
+        this.scrapPlans = this.scrapPlans.filter(id => !id.equals(planId));
+        return this.save();
+    }
+
+    addPlan(plan) {
+        const newPlan = new Plan(plan);
+        this.myPlans.push(newPlan);
+        return this.save();
+    }
+
+    removePlan(plan_id) {
+        this.myPlans = this.myPlans.filter(plan => plan.plan_id !== plan_id);
+        return this.save();
+    }
+
 }
 
 module.exports = User;
