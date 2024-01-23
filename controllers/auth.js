@@ -236,11 +236,10 @@ exports.postGoogleLogin = (req, res) => {
                         if (!user) {
                             // 첫 SNS 로그인 -> signup
                             const username =
-                                '여행자' +
                                 generator.generate({
                                     length: 8,
                                     numbers: true,
-                                });
+                                }) + '여행자';
                             const password = generator.generate({
                                 length: 14,
                                 numbers: true,
@@ -344,7 +343,7 @@ exports.postKakaoAuth = async (req, res, next) => {
                 const username = generator.generate({
                     length: 8,
                     numbers: true,
-                });
+                }) + '여행자';
                 const password = generator.generate({
                     length: 14,
                     numbers: true,
