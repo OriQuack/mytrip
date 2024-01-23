@@ -1,5 +1,4 @@
 const mongodb = require('mongodb');
-const Plan = require('./plan');
 const DKIM = require('nodemailer/lib/dkim');
 const { debugPort } = require('process');
 
@@ -16,7 +15,7 @@ class User {
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
         this.likedPlans = likedPlans;
         this.scrapPlans = scrapPlans;
-        this.myPlans = myPlans.map(planData => new Plan(planData));
+        this.myPlans = myPlans;
     }
 
     save() {
@@ -100,27 +99,45 @@ class User {
         return this.save();
     }
 
-    addScrapPlan(planId) {
-        this.scrapPlans.push(planId);
+    addScrapPlan(planData) {
+        const planSummary = {
+            planId: planData._id,
+            name: planData.name,
+            ownerId: planData.ownerId,
+            city: planData.city,
+            date: planData.date,
+            likes: planData.likes,
+            scraps: planData.scraps,
+            isPublic: planData.isPublic
+        };
+        this.scrapPlans.push(planSummary);
         return this.save();
     }
 
     removeScrapPlan(planId) {
-        this.scrapPlans = this.scrapPlans.filter(id => !id.equals(planId));
+        this.scrapPlans = this.scrapPlans.filter(plan => plan.planId !== planId);
         return this.save();
     }
 
-    addPlan(plan) {
-        const newPlan = new Plan(plan);
-        this.myPlans.push(newPlan);
+    addPlan(planData) {
+        const planSummary = {
+            planId: planData._id,
+            name: planData.name,
+            ownerId: planData.ownerId,
+            city: planData.city,
+            date: planData.date,
+            likes: planData.likes,
+            scraps: planData.scraps,
+            isPublic: planData.isPublic
+        };
+        this.myPlans.push(planSummary);
         return this.save();
     }
 
-    removePlan(plan_id) {
-        this.myPlans = this.myPlans.filter(plan => plan.plan_id !== plan_id);
+    removePlan(planId) {
+        this.myPlans = this.myPlans.filter(plan => plan.planId !== planId);
         return this.save();
     }
-
 }
 
 module.exports = User;
