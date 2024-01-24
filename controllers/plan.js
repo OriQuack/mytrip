@@ -1,5 +1,3 @@
-const bcrypt = require('bcryptjs');
-
 const Plan = require('../models/plan');
 
 exports.getIndex = (req, res, next) => {
@@ -40,7 +38,7 @@ exports.postAddPlan = (req, res, next) => {
 
 exports.getShareUri = (req, res, next) => {
     const planId = req.body.planId;
-    const shareUri = 'http://localhost:5173/shared-trip/' + bcrypt.hashSync(planId, 8);
+    const shareUri = 'http://localhost:5173/shared-trip/' + btoa(planId);
     Plan.getPlanById(planId)
         .then((plan) => {
             const updatingPlan = new Plan(plan);
@@ -53,6 +51,18 @@ exports.getShareUri = (req, res, next) => {
                     console.log(err);
                     return res.status(500).json({ message: 'Interner server error' });
                 });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(404).json({ message: 'Plan not found' });
+        });
+};
+
+exports.getSharedPlan = (req, res, next) => {
+    const planId = atob(req.params.code);
+    Plan.getPlanById(planId)
+        .then((plan) => {
+            return res.status(200).json(plan);
         })
         .catch((err) => {
             console.log(err);

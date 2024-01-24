@@ -13,4 +13,6 @@ router.post('/add-plan', authenticate, planController.postAddPlan);
 
 router.get('/share', authenticate, planController.getShareUri);
 
+router.get('/shared-trip/:code', planController.getSharedPlan);
+
 module.exports = router;
