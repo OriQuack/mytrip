@@ -13,7 +13,7 @@ exports.postAddPlan = (req, res, next) => {
     const plan = new Plan({
         palnId: req.body.planId,
         name: req.body.name,
-        ownerId: req.user._id,
+        ownerId: req.user._id.toString(),
         city: req.body.city,
         date: req.body.date,
         period: req.body.period,
@@ -80,13 +80,13 @@ exports.getSharedPlan = (req, res, next) => {
 };
 
 exports.deletePlan = (req, res, next) => {
-    const planId = atob(req.params.code);
+    const planId = req.body.planId
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
-            if (plan.ownerId !== toString(req.user._id)) {
+            if (plan.ownerId !== req.user._id.toString()) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             const updatingPlan = new Plan(plan);
