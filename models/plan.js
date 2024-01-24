@@ -3,17 +3,29 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Plan {
-    constructor({ _id, name, ownerId, city, time: date, likes, isPublic, schedule }) {
+    constructor({
+        _id,
+        name,
+        ownerId,
+        city,
+        date,
+        period,
+        season,
+        totalCost,
+        likes,
+        isPublic,
+        schedule = [],
+    }) {
         this._id = _id ? _id : null;
         this.name = name;
         this.ownerId = ownerId;
         this.city = city;
-        this.date = date; // 날짜
-        // this.period = -> 날짜에 따라 계산 TODO
-        // this.season = -> 날짜에 따라 계산 TODO
+        this.date = date;
+        this.period = period; // 며칠 동안
+        this.season = season;
         this.likes = likes ? likes : 0;
         this.scraps = scraps ? scraps : 0;
-        // this.totalCost = -> schedule 따라 계산 TODO
+        this.totalCost = totalCost;
         this.isPublic = isPublic;
         this.schedule = schedule;
     }
