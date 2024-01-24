@@ -1,4 +1,5 @@
 const mongodb = require('mongodb');
+const bcrypt = require('bcryptjs');
 
 const getDb = require('../util/database').getDb;
 
@@ -15,6 +16,7 @@ class Plan {
         likes,
         isPublic,
         schedule = [],
+        shareUri,
     }) {
         this._id = _id ? _id : null;
         this.name = name;
@@ -28,6 +30,7 @@ class Plan {
         this.totalCost = totalCost;
         this.isPublic = isPublic;
         this.schedule = schedule;
+        this.shareUri = shareUri ? shareUri : null;
     }
 
     save() {
@@ -37,6 +40,11 @@ class Plan {
             return db.collection('plans').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('plans').insertOne(this);
+    }
+
+    setShareUri(uri) {
+        this.shareUri = uri;
+        return this.save();
     }
 
     static getPlanById(id) {
