@@ -44,6 +44,9 @@ exports.getShareUri = (req, res, next) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
+            if (plan.ownerId !== toString(req.user._id)) {
+                return res.status(403).json({ message: 'Unauthorized' });
+            }
             const updatingPlan = new Plan(plan);
             updatingPlan
                 .setShareUri(shareUri)
@@ -69,6 +72,32 @@ exports.getSharedPlan = (req, res, next) => {
                 return res.status(404).json({ message: 'Plan not found' });
             }
             return res.status(200).json(plan);
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: 'Interner server error' });
+        });
+};
+
+exports.deletePlan = (req, res, next) => {
+    const planId = atob(req.params.code);
+    Plan.getPlanById(planId)
+        .then((plan) => {
+            if (!plan) {
+                return res.status(404).json({ message: 'Plan not found' });
+            }
+            if (plan.ownerId !== toString(req.user._id)) {
+                return res.status(403).json({ message: 'Unauthorized' });
+            }
+            const updatingPlan = new Plan(plan);
+            updatingPlan
+                .deletePlan()
+                .then((result) => {
+                    return res.status(200).json({ message: 'Successfully deleted' });
+                })
+                .catch((err) => {
+                    return res.status(500).json({ message: 'Interner server error' });
+                });
         })
         .catch((err) => {
             console.log(err);
