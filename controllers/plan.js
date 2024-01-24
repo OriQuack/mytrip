@@ -44,7 +44,7 @@ exports.getShareUri = (req, res, next) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
-            if (plan.ownerId !== toString(req.user._id)) {
+            if (plan.ownerId.toString() !== req.user._id.toString()) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             const updatingPlan = new Plan(plan);
