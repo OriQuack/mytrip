@@ -1,8 +1,7 @@
 const Plan = require('../models/plan');
 
 exports.getIndex = (req, res, next) => {
-    // TODO
-    res.send('<h1>Main</h1>'); // Connect to frontend
+    res.send('<h1>Main</h1>');
 };
 
 exports.getProtected = (req, res, next) => {
@@ -23,9 +22,15 @@ exports.postAddPlan = (req, res, next) => {
     });
     plan.save()
         .then((result) => {
-            return res.status(201).json({ message: 'Plan added' });
+            // TODO: User 에 planId 추가
+            // TODO: City 에 planId 추가
+            return res.status(201).json({ planId: result.insertedId });
         })
         .catch((err) => {
             return res.status(400).json({ message: 'Bad request' });
         });
+};
+
+exports.getShareUri = (req, res, next) => {
+    
 };
