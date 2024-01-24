@@ -15,4 +15,6 @@ router.get('/share', authenticate, planController.getShareUri);
 
 router.get('/shared-trip/:code', planController.getSharedPlan);
 
+router.delete('/delete', authenticate, planController.deletePlan);
+
 module.exports = router;

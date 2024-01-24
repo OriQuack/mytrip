@@ -48,6 +48,11 @@ class Plan {
         return this.save();
     }
 
+    deletePlan() {
+        const db = getDb();
+        return db.collection('plans').deleteOne({ _id: new mongodb.ObjectId(this._id) });
+    }
+
     static getPlanById(id) {
         const db = getDb();
         return db.collection('plans').findOne({ _id: new mongodb.ObjectId(id) });
