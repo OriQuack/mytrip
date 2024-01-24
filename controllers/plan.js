@@ -41,6 +41,9 @@ exports.getShareUri = (req, res, next) => {
     const shareUri = 'http://localhost:5173/shared-trip/' + btoa(planId);
     Plan.getPlanById(planId)
         .then((plan) => {
+            if (!plan) {
+                return res.status(404).json({ message: 'Plan not found' });
+            }
             const updatingPlan = new Plan(plan);
             updatingPlan
                 .setShareUri(shareUri)
@@ -54,7 +57,7 @@ exports.getShareUri = (req, res, next) => {
         })
         .catch((err) => {
             console.log(err);
-            return res.status(404).json({ message: 'Plan not found' });
+            return res.status(500).json({ message: 'Interner server error' });
         });
 };
 
@@ -62,10 +65,13 @@ exports.getSharedPlan = (req, res, next) => {
     const planId = atob(req.params.code);
     Plan.getPlanById(planId)
         .then((plan) => {
+            if (!plan) {
+                return res.status(404).json({ message: 'Plan not found' });
+            }
             return res.status(200).json(plan);
         })
         .catch((err) => {
             console.log(err);
-            return res.status(404).json({ message: 'Plan not found' });
+            return res.status(500).json({ message: 'Interner server error' });
         });
 };
