@@ -21,7 +21,7 @@ exports.postAddPlan = (req, res, next) => {
         totalCost: req.body.totalCost,
         isPublic: req.body.isPublic,
         schedule: req.body.schedule,
-        shareUri: shareUri,
+        shareUri: req.body.shareUri,
     });
     plan.save()
         .then((result) => {

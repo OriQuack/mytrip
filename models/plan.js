@@ -14,6 +14,7 @@ class Plan {
         season,
         totalCost,
         likes,
+        scraps,
         isPublic,
         schedule = [],
         shareUri,
@@ -49,8 +50,8 @@ class Plan {
 
     static getPlanById(id) {
         const db = getDb();
-        return db.collection('plans').findOne({ _id: id });
+        return db.collection('plans').findOne({ _id: new mongodb.ObjectId(id) });
     }
 }
 
-module.exports.Plan;
+module.exports = Plan;
