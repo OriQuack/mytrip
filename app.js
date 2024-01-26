@@ -17,7 +17,7 @@ const corsOptions = require('./config/cors_config').options;
 const authRoutes = require('./routes/auth');
 const planRoutes = require('./routes/plan');
 const refreshRoute = require('./routes/refreshToken');
-
+const destRoutes = require('./routes/destination');
 const OauthRoutes = require('./routes/Oauth');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -27,6 +27,7 @@ app.use(corsOptions);
 app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
 app.use('/Oauth',OauthRoutes);
+app.use('/destination',destRoutes);
 app.use(refreshRoute);
 //app.use(authRoutes);
 //app.use(planRoutes);
