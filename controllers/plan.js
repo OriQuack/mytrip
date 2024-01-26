@@ -1,4 +1,6 @@
 const Plan = require('../models/plan');
+const User = require('../models/user');
+const City = require('../models/city');
 
 exports.getIndex = (req, res, next) => {
     res.send('<h1>Main</h1>');
@@ -32,6 +34,7 @@ exports.postAddPlan = (req, res, next) => {
         .then((result) => {
             // TODO: User 에 plan 추가 / 변경
             // TODO: City 에 plan 추가 / 변경
+            req.user.addPlan(plan);
             return res
                 .status(update ? 200 : 201)
                 .json({ planId: update ? result.upsertedId : result.insertedId });

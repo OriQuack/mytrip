@@ -129,7 +129,8 @@ class User {
             date: planData.date,
             likes: planData.likes,
             scraps: planData.scraps,
-            isPublic: planData.isPublic
+            isPublic: planData.isPublic,
+            hashtag: planData.hashtag,
         };
 
         // myPlans에서 동일한 planId를 가진 요소 찾기

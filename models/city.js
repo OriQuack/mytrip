@@ -30,7 +30,9 @@ class City {
             ownerId: planData.ownerId,
             date: planData.date,
             likes: planData.likes,
-            scraps: planData.scraps
+            isPublic: planData.isPublic,
+            hashtag: planData.hashtag,
+            // TODO: 필터를 해야하는데 데이터 추가??
         };
         this.plans.push(planSummary);
         this.planCount = this.plans.length;
@@ -44,4 +46,4 @@ class City {
     }
 }
 
-module.exports.City;
+module.exports = City;
