@@ -11,22 +11,27 @@ exports.getProtected = (req, res, next) => {
 exports.postAddPlan = (req, res, next) => {
     const update = req.body.planId ? true : false;
     const plan = new Plan({
-        palnId: req.body.planId,
+        _id: req.body.planId,
         name: req.body.name,
-        ownerId: req.user._id.toString(),
+        ownerId: req.user._id,
         city: req.body.city,
         date: req.body.date,
         period: req.body.period,
         season: req.body.season,
         totalCost: req.body.totalCost,
-        isPublic: req.body.isPublic,
-        schedule: req.body.schedule,
+        likes: req.body.likes,
+        scraps: req.body.scraps,
+        image: req.body.imageUrl,
         shareUri: req.body.shareUri,
+        description: req.body.description,
+        isPublic: req.body.isPublic,
+        hashtag: req.body.hashtag,
+        schedule: req.body.schedule,
     });
     plan.save()
         .then((result) => {
-            // TODO: User 에 planId 추가 / 변경
-            // TODO: City 에 planId 추가 / 변경
+            // TODO: User 에 plan 추가 / 변경
+            // TODO: City 에 plan 추가 / 변경
             return res
                 .status(update ? 200 : 201)
                 .json({ planId: update ? result.upsertedId : result.insertedId });
@@ -38,15 +43,18 @@ exports.postAddPlan = (req, res, next) => {
 
 exports.getShareUri = (req, res, next) => {
     const planId = req.body.planId;
-    const shareUri = 'http://localhost:5173/shared-trip/' + btoa(planId);
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
-            if (plan.ownerId !== toString(req.user._id)) {
+            if (plan.ownerId.toString() !== req.user._id.toString()) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
+            if (plan.shareUri) {
+                return res.status(200).json({ uri: shareUri });
+            }
+            const shareUri = 'http://localhost:5173/shared-trip/' + btoa(planId);
             const updatingPlan = new Plan(plan);
             updatingPlan
                 .setShareUri(shareUri)
@@ -80,13 +88,13 @@ exports.getSharedPlan = (req, res, next) => {
 };
 
 exports.deletePlan = (req, res, next) => {
-    const planId = req.body.planId
+    const planId = req.body.planId;
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
-            if (plan.ownerId !== req.user._id.toString()) {
+            if (plan.ownerId.toString() !== req.user._id.toString()) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             const updatingPlan = new Plan(plan);
