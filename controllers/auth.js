@@ -92,10 +92,13 @@ exports.postReset = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {
         if (err) {
             console.log(err);
-            res.status(500).json({ message: 'Interner server error' });
+            return res.status(500).json({ message: 'Interner server error' });
         }
         const token = buffer.toString('hex');
         const resetTokenExpiration = Date.now() + 3600000;
+        const cipher = crypto.createCipher('aes-256-cbc', process.env.PASSWORD_TOKEN_SECRET);
+        let encryptedToken = cipher.update(token, 'utf8', 'hex');
+        encryptedToken += cipher.final('hex');
 
         User.getUserByEmail(req.body.email)
             .then((user) => {
@@ -107,16 +110,16 @@ exports.postReset = (req, res, next) => {
                 }
                 const updatingUser = new User(user);
                 updatingUser
-                    .updateUserToken(token, resetTokenExpiration)
+                    .updateUserToken(encryptedToken, resetTokenExpiration)
                     .then((result) => {
                         transporter.sendMail({
                             to: updatingUser.email,
                             from: 'yongjuni30@gmail.com', //추후에 다른 이메일 주소 등록해서 바꿔야됨
                             subject: 'Password reset',
                             html: `
-                        <p>You requested a password reset</p>
-                        <p>Click this <a href="http://localhost:5173/auth/new-password/${token}">link</a> to set a new password.</p>
-                        `,
+                            <p>You requested a password reset</p>
+                            <p>Click this <a href="http://localhost:5173/auth/new-password/${token}">link</a> to set a new password.</p>
+                            `,
                         });
                         return res.status(200).json({
                             isSend: true,
@@ -136,8 +139,12 @@ exports.postReset = (req, res, next) => {
 
 exports.postNewPassword = (req, res, next) => {
     const newPassword = req.body.password;
-    const passwordToken = req.body.passwordToken;
-    User.getUserByToken({ resetToken: passwordToken })
+    const token = req.body.passwordToken;
+    const cipher = crypto.createCipher('aes-256-cbc', process.env.PASSWORD_TOKEN_SECRET);
+    let encryptedToken = cipher.update(token, 'utf8', 'hex');
+    encryptedToken += cipher.final('hex');
+
+    User.getUserByToken({ resetToken: encryptedToken })
         .then((user) => {
             if (user) {
                 const updatingUser = new User(user);
@@ -340,10 +347,11 @@ exports.postKakaoAuth = async (req, res, next) => {
             if (!user) {
                 //Signup
                 console.log('Kakao sign up');
-                const username = generator.generate({
-                    length: 8,
-                    numbers: true,
-                }) + '여행자';
+                const username =
+                    generator.generate({
+                        length: 8,
+                        numbers: true,
+                    }) + '여행자';
                 const password = generator.generate({
                     length: 14,
                     numbers: true,
