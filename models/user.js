@@ -5,7 +5,7 @@ const { debugPort } = require('process');
 const getDb = require('../util/database').getDb;
 
 class User {
-    constructor({ username, email, password, _id, kakaoId, resetToken, resetTokenExpiration }) {
+    constructor({ username, email, password, _id, kakaoId, resetToken, resetTokenExpiration, likedPlans = [], scrapPlans = [], myPlans = [] }) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -13,6 +13,9 @@ class User {
         this.kakaoId = kakaoId ? kakaoId : null;
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
+        this.likedPlans = likedPlans; //plan id의 배열
+        this.scrapPlans = scrapPlans;
+        this.myPlans = myPlans;
     }
 
     save() {
@@ -82,7 +85,67 @@ class User {
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
+    }
+
+    //likedPlan은 plan id의 배열
+    addLikedPlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.likedPlans.push(planId);
+        return this.save();
+    }
+
+    removeLikedPlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.likedPlans = this.likedPlans.filter(id => !id.equals(planId));
+        return this.save();
+    }
+
+    addScrapPlan(planData) { //planData는 Plan 객체
+        const planSummary = {
+            planId: planData._id,
+            name: planData.name,
+            ownerId: planData.ownerId,
+            city: planData.city,
+            date: planData.date,
+            likes: planData.likes,
+            scraps: planData.scraps,
+            isPublic: planData.isPublic
+        };
+        this.scrapPlans.push(planSummary);
+        return this.save();
+    }
+
+    removeScrapPlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.scrapPlans = this.scrapPlans.filter(plan => !plan.planId.equals(planId));
+        return this.save();
+    }
+
+    savePlan(planData) { //planData는 Plan 객체
+        const planSummary = {
+            planId: planData._id,
+            name: planData.name,
+            ownerId: planData.ownerId,
+            city: planData.city,
+            date: planData.date,
+            likes: planData.likes,
+            scraps: planData.scraps,
+            isPublic: planData.isPublic
+        };
+
+        // myPlans에서 동일한 planId를 가진 요소 찾기
+        const existingPlanIndex = this.myPlans.findIndex(p => p.planId.toString() === planData._id.toString());
+
+        if (existingPlanIndex >= 0) { //업데이트
+            this.myPlans[existingPlanIndex] = planSummary;
+        } else { //추가
+            this.myPlans.push(planSummary);
+        }
+        return this.save();
+    }
+
+    removePlan(planId) { //planId는 ObjectId 타입이어야 한다.
+        this.myPlans = this.myPlans.filter(plan => !plan.planId.equals(planId));
+        return this.save();
     }
 }
 
