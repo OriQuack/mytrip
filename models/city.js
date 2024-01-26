@@ -23,7 +23,7 @@ class City {
         return db.collection('cities').findOne({ _id: new mongodb.ObjectId(id) });
     }
 
-    addPlan(planData) {
+    addPlan(planData) { //planData는 Plan 객체
         const planSummary = {
             planId: planData._id,
             name: planData.name,

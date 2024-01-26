@@ -13,7 +13,7 @@ class User {
         this.kakaoId = kakaoId ? kakaoId : null;
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
-        this.likedPlans = likedPlans;
+        this.likedPlans = likedPlans; //plan id의 배열
         this.scrapPlans = scrapPlans;
         this.myPlans = myPlans;
     }
@@ -89,6 +89,7 @@ class User {
             });
     }
 
+    //likedPlan은 plan id의 배열
     addLikedPlan(planId) { //planId는 ObjectId 타입이어야 한다.
         this.likedPlans.push(planId);
         return this.save();
@@ -99,7 +100,7 @@ class User {
         return this.save();
     }
 
-    addScrapPlan(planData) {
+    addScrapPlan(planData) { //planData는 Plan 객체
         const planSummary = {
             planId: planData._id,
             name: planData.name,
@@ -119,7 +120,7 @@ class User {
         return this.save();
     }
 
-    addPlan(planData) {
+    savePlan(planData) { //planData는 Plan 객체
         const planSummary = {
             planId: planData._id,
             name: planData.name,
@@ -130,7 +131,15 @@ class User {
             scraps: planData.scraps,
             isPublic: planData.isPublic
         };
-        this.myPlans.push(planSummary);
+
+        // myPlans에서 동일한 planId를 가진 요소 찾기
+        const existingPlanIndex = this.myPlans.findIndex(p => p.planId.toString() === planData._id.toString());
+
+        if (existingPlanIndex >= 0) { //업데이트
+            this.myPlans[existingPlanIndex] = planSummary;
+        } else { //추가
+            this.myPlans.push(planSummary);
+        }
         return this.save();
     }
 
