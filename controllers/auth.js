@@ -55,7 +55,9 @@ exports.postSignup = (req, res, next) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-
+    if(User.getUserByEmail(email))
+        return res.status(500).json({message: "user already exists!"});
+    
     bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
@@ -102,7 +104,7 @@ exports.postReset = (req, res, next) => {
         User.getUserByEmail(req.body.email)
             .then((user) => {
                 if (!user) {
-                    req.flash('error', 'No account with the email');
+                    
                     return res.send({
                         isSend: false,
                     });
