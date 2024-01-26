@@ -7,7 +7,7 @@ class Plan {
     constructor({
         _id,
         name,
-        ownerId,
+        ownerId, // ObjectID
         city,
         date,
         period,
@@ -15,9 +15,12 @@ class Plan {
         totalCost,
         likes,
         scraps,
-        isPublic,
-        schedule = [],
+        image,
         shareUri,
+        description,
+        isPublic,
+        hashtag = [],
+        schedule = [],
     }) {
         this._id = _id ? _id : null;
         this.name = name;
@@ -26,12 +29,15 @@ class Plan {
         this.date = date;
         this.period = period; // 며칠 동안
         this.season = season;
+        this.totalCost = totalCost;
         this.likes = likes ? likes : 0;
         this.scraps = scraps ? scraps : 0;
-        this.totalCost = totalCost;
-        this.isPublic = isPublic;
-        this.schedule = schedule;
+        this.image = image;
         this.shareUri = shareUri ? shareUri : null;
+        this.description = description ? description : null;
+        this.isPublic = isPublic;
+        this.hashtag = hashtag ? hashtag : null;
+        this.schedule = schedule;
     }
 
     save() {
