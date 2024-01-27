@@ -38,8 +38,8 @@ class City {
             likes: planData.likes,
             image: planData.image,
             isPublic: planData.isPublic,
+            totalCost: planData.totalCost,
             hashtag: planData.hashtag,
-            // TODO: 필터를 해야하는데 데이터 추가??
         };
         // plans에서 동일한 planId를 가진 요소 찾기
         const existingPlanIndex = this.plans.findIndex(

@@ -23,6 +23,7 @@ exports.postAddPlan = (req, res, next) => {
         period: req.body.period,
         season: req.body.season,
         totalCost: req.body.totalCost,
+        numPeople: req.body.numPeople,
         likes: req.body.likes,
         scraps: req.body.scraps,
         image: req.body.imageUrl,

@@ -13,6 +13,7 @@ class Plan {
         period,
         season,
         totalCost,
+        numPeople,
         likes,
         scraps,
         image,
@@ -30,6 +31,7 @@ class Plan {
         this.period = period; // 며칠 동안
         this.season = season;
         this.totalCost = totalCost;
+        this.numPeople = numPeople;
         this.likes = likes ? likes : 0;
         this.scraps = scraps ? scraps : 0;
         this.image = image;
