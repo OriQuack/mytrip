@@ -1,3 +1,5 @@
+const mongodb = require('mongodb');
+
 const Plan = require('../models/plan');
 const User = require('../models/user');
 const City = require('../models/city');
@@ -13,7 +15,7 @@ exports.getProtected = (req, res, next) => {
 exports.postAddPlan = (req, res, next) => {
     const update = req.body.planId ? true : false;
     const plan = new Plan({
-        _id: req.body.planId,
+        _id: update ? mongodb.ObjectId(req.body._id) : null,
         name: req.body.name,
         ownerId: req.user._id,
         city: req.body.city,
@@ -30,16 +32,39 @@ exports.postAddPlan = (req, res, next) => {
         hashtag: req.body.hashtag,
         schedule: req.body.schedule,
     });
+    // Plan에 plan 추가/변경
     plan.save()
         .then((result) => {
-            // TODO: User 에 plan 추가 / 변경
-            // TODO: City 에 plan 추가 / 변경
-            req.user.addPlan(plan);
-            return res
-                .status(update ? 200 : 201)
-                .json({ planId: update ? result.upsertedId : result.insertedId });
+            const planId = update ? plan._id : result.insertedId;
+            // User에 plan 추가/변경
+            req.user.savePlan(plan).catch((err) => {
+                console.log(err);
+                return res.status(500).json({ message: 'Interner server error' });
+            });
+            // City에 plan 추가/변경
+            City.getcityByName(req.body.city)
+                .then((city) => {
+                    if (!city) {
+                        return res.status(404).json({ message: 'City not found' });
+                    }
+                    const updatingCity = new City(city);
+                    updatingCity
+                        .addPlan(plan)
+                        .then((result) => {
+                            return res.status(update ? 201 : 200).json({ planId: planId });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            return res.status(500).json({ message: 'Interner server error' });
+                        });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res.status(500).json({ message: 'Interner server error' });
+                });
         })
         .catch((err) => {
+            console.log(err);
             return res.status(500).json({ message: 'Interner server error' });
         });
 };
@@ -100,6 +125,23 @@ exports.deletePlan = (req, res, next) => {
             if (plan.ownerId.toString() !== req.user._id.toString()) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
+            // User에 plan 삭제
+            req.user.removePlan(new mongodb.ObjectId(planId));
+            // City에 plan 삭제
+            City.getcityByName(plan.city)
+                .then((city) => {
+                    if (!city) {
+                        return res.status(404).json({ message: 'City not found' });
+                    }
+                    const updatingCity = new City(city);
+                    updatingCity.removePlan(new mongodb.ObjectId(planId)).catch((err) => {
+                        return res.status(500).json({ message: 'Interner server error' });
+                    });
+                })
+                .catch((err) => {
+                    return res.status(500).json({ message: 'Interner server error' });
+                });
+            // Plan에 plan 삭제
             const updatingPlan = new Plan(plan);
             updatingPlan
                 .deletePlan()

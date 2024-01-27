@@ -129,10 +129,11 @@ class User {
             date: planData.date,
             likes: planData.likes,
             scraps: planData.scraps,
+            image: planData.image,
             isPublic: planData.isPublic,
             hashtag: planData.hashtag,
         };
-
+        
         // myPlans에서 동일한 planId를 가진 요소 찾기
         const existingPlanIndex = this.myPlans.findIndex(p => p.planId.toString() === planData._id.toString());
 

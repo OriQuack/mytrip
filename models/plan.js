@@ -7,7 +7,7 @@ class Plan {
     constructor({
         _id,
         name,
-        ownerId, // ObjectID
+        ownerId,
         city,
         date,
         period,
@@ -22,9 +22,9 @@ class Plan {
         hashtag = [],
         schedule = [],
     }) {
-        this._id = _id ? _id : null;
+        this._id = _id ? _id : null; // ObjectId
         this.name = name;
-        this.ownerId = ownerId;
+        this.ownerId = ownerId; // ObjectId
         this.city = city;
         this.date = date;
         this.period = period; // 며칠 동안

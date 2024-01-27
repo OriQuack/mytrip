@@ -8,7 +8,7 @@ const authenticate = (req, res, next) => {
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음
-        return res.status(403).json({ message: 'Authentication required' });
+        return res.status(403).json({ message: 'Authentication required: no AT or RT' });
     }
     jwt.verify(
         accessToken,
@@ -36,7 +36,7 @@ const authenticate = (req, res, next) => {
                     (err, accessDecoded) => {
                         if (err) {
                             // AT invalid
-                            return res.status(403).json({ message: 'Authentication required' });
+                            return res.status(403).json({ message: 'Authentication required: AT invalid' });
                         }
                         // AT expired
                         jwt.verify(
@@ -54,7 +54,7 @@ const authenticate = (req, res, next) => {
                                     // AT expired && RT invalid or expired
                                     return res
                                         .status(403)
-                                        .json({ message: 'Authentication required' });
+                                        .json({ message: 'Authentication required: AT expired and RT invalid or expired' });
                                 }
                                 // AT expired && RT valid -> AT 재발급
                                 const newAccessToken = generateToken.genAccessToken(
