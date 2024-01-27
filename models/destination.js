@@ -69,11 +69,14 @@ class Destination {
             ])
             .toArray()
             .then((destination) => {
+                
                 return destination;
+                
             })
             .catch((err) => {
                 console.log(err);
             });
     }
+    
 }
 module.exports = Destination;
