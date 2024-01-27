@@ -32,14 +32,7 @@ class User {
     save() {
         const db = getDb();
         if (this._id) {
-            const existingUser = db.collection('users').findOne({ email: this.email });
-            console.log(existingUser);
-            if (existingUser) {
-                console.log('user exist');
-                return res.status(300);
-            }
             // User exists -> update user
-            console.log('user exists');
             return db.collection('users').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('users').insertOne(this);
