@@ -13,9 +13,9 @@ exports.getProtected = (req, res, next) => {
 };
 
 exports.postAddPlan = (req, res, next) => {
-    const update = req.body.planId ? true : false;
+    const update = req.body._id ? true : false;
     const plan = new Plan({
-        _id: update ? mongodb.ObjectId(req.body._id) : null,
+        _id: update ? new mongodb.ObjectId(req.body._id) : null,
         name: req.body.name,
         ownerId: req.user._id,
         city: req.body.city,
