@@ -10,6 +10,7 @@ class Plan {
         ownerId,
         city,
         date,
+        dateAdded,
         period,
         season,
         totalCost,
@@ -28,6 +29,7 @@ class Plan {
         this.ownerId = ownerId; // ObjectId
         this.city = city;
         this.date = date;
+        this.dateAdded = dateAdded;
         this.period = period; // 며칠 동안
         this.season = season;
         this.totalCost = totalCost;

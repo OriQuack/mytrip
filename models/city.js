@@ -25,6 +25,7 @@ class City {
             name: planData.name,
             ownerId: planData.ownerId,
             date: planData.date,
+            dateAdded: planData.dateAdded,
             likes: planData.likes,
             image: planData.image,
             season: planData.season,
@@ -56,7 +57,9 @@ class City {
     }
 
     filterPlans(sort, season, cost, numPeople) {
-        db.collection('cities')
+        const db = getDb();
+        return db
+            .collection('cities')
             .find({
                 plans: {
                     $elemMatch: {
@@ -66,7 +69,8 @@ class City {
                     },
                 },
             })
-            .sort(sort === 'likes' ? { likes: 1 } : { date: 1 });
+            .sort(sort === 'likes' ? { likes: -1 } : { dateAdded: 1 })
+            .limit(10);
     }
 
     static getCityById(id) {
