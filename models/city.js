@@ -18,16 +18,6 @@ class City {
         return db.collection('cities').insertOne(this);
     }
 
-    static getCityById(id) {
-        const db = getDb();
-        return db.collection('cities').findOne({ _id: new mongodb.ObjectId(id) });
-    }
-
-    static getcityByName(name) {
-        const db = getDb();
-        return db.collection('cities').findOne({ name: name });
-    }
-
     addPlan(planData) {
         //planData는 Plan 객체
         const planSummary = {
@@ -35,11 +25,14 @@ class City {
             name: planData.name,
             ownerId: planData.ownerId,
             date: planData.date,
+            dateAdded: planData.dateAdded,
             likes: planData.likes,
             image: planData.image,
+            season: planData.season,
             isPublic: planData.isPublic,
+            totalCost: planData.totalCost,
+            numPeople: planData.numPeople,
             hashtag: planData.hashtag,
-            // TODO: 필터를 해야하는데 데이터 추가??
         };
         // plans에서 동일한 planId를 가진 요소 찾기
         const existingPlanIndex = this.plans.findIndex(
@@ -61,6 +54,35 @@ class City {
         this.plans = this.plans.filter((plan) => !plan.planId.equals(planId));
         this.planCount--;
         return this.save();
+    }
+
+    filterPlans(sort, season, cost, numPeople) {
+        const planList = this.plans.filter((plan) => {
+            return (
+                (!season || plan.season == season) &&
+                (!cost || plan.totalCost <= cost) &&
+                (!numPeople || plan.numPeople == numPeople)
+            );
+        });
+        planList.sort((a, b) => {
+            const planA = sort == 'likes' ? a.likes : a.dateAdded;
+            const planB = sort == 'likes' ? b.likes : b.dateAdded;
+            if (planA < planB) {
+                return sort == 'likes' ? 1 : -1;
+            }
+            return sort == 'likes' ? -1 : 1;
+        });
+        return planList;
+    }
+
+    static getCityById(id) {
+        const db = getDb();
+        return db.collection('cities').findOne({ _id: new mongodb.ObjectId(id) });
+    }
+
+    static getcityByName(name) {
+        const db = getDb();
+        return db.collection('cities').findOne({ name: name });
     }
 }
 

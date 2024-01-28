@@ -10,9 +10,11 @@ class Plan {
         ownerId,
         city,
         date,
+        dateAdded,
         period,
         season,
         totalCost,
+        numPeople,
         likes,
         scraps,
         image,
@@ -21,15 +23,18 @@ class Plan {
         isPublic,
         hashtag = [],
         schedule = [],
+        destinationCart = [],
     }) {
         this._id = _id ? _id : null; // ObjectId
         this.name = name;
         this.ownerId = ownerId; // ObjectId
         this.city = city;
         this.date = date;
+        this.dateAdded = dateAdded;
         this.period = period; // 며칠 동안
         this.season = season;
         this.totalCost = totalCost;
+        this.numPeople = numPeople;
         this.likes = likes ? likes : 0;
         this.scraps = scraps ? scraps : 0;
         this.image = image;
@@ -38,6 +43,7 @@ class Plan {
         this.isPublic = isPublic;
         this.hashtag = hashtag ? hashtag : null;
         this.schedule = schedule;
+        this.destinationCart = destinationCart;
     }
 
     save() {

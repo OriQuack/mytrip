@@ -3,6 +3,7 @@ const mongodb = require('mongodb');
 const Plan = require('../models/plan');
 const User = require('../models/user');
 const City = require('../models/city');
+const { log } = require('console');
 
 exports.getIndex = (req, res, next) => {
     res.send('<h1>Main</h1>');
@@ -20,9 +21,11 @@ exports.postAddPlan = (req, res, next) => {
         ownerId: req.user._id,
         city: req.body.city,
         date: req.body.date,
+        dateAdded: new Date().toISOString().split('T')[0].replace(/-/g, '.'),
         period: req.body.period,
         season: req.body.season,
         totalCost: req.body.totalCost,
+        numPeople: req.body.numPeople,
         likes: req.body.likes,
         scraps: req.body.scraps,
         image: req.body.imageUrl,
@@ -31,6 +34,7 @@ exports.postAddPlan = (req, res, next) => {
         isPublic: req.body.isPublic,
         hashtag: req.body.hashtag,
         schedule: req.body.schedule,
+        destinationCart: req.body.destinationCart,
     });
     // Plan에 plan 추가/변경
     plan.save()
@@ -151,6 +155,23 @@ exports.deletePlan = (req, res, next) => {
                 .catch((err) => {
                     return res.status(500).json({ message: 'Interner server error' });
                 });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: 'Interner server error' });
+        });
+};
+
+exports.getPlanByCity = (req, res, next) => {
+    City.getcityByName(req.params.city)
+        .then((city) => {
+            if (!city) {
+                return res.status(404).json({ message: 'City not found' });
+            }
+            city = new City(city);
+            const { sort, season, cost, num } = req.query;
+            const filteredPlans = city.filterPlans(sort, season, cost, num);
+            return res.status(200).json(filteredPlans);
         })
         .catch((err) => {
             console.log(err);
