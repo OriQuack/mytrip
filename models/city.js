@@ -18,16 +18,6 @@ class City {
         return db.collection('cities').insertOne(this);
     }
 
-    static getCityById(id) {
-        const db = getDb();
-        return db.collection('cities').findOne({ _id: new mongodb.ObjectId(id) });
-    }
-
-    static getcityByName(name) {
-        const db = getDb();
-        return db.collection('cities').findOne({ name: name });
-    }
-
     addPlan(planData) {
         //planData는 Plan 객체
         const planSummary = {
@@ -37,8 +27,10 @@ class City {
             date: planData.date,
             likes: planData.likes,
             image: planData.image,
+            season: planData.season,
             isPublic: planData.isPublic,
             totalCost: planData.totalCost,
+            numPeople: planData.numPeople,
             hashtag: planData.hashtag,
         };
         // plans에서 동일한 planId를 가진 요소 찾기
@@ -61,6 +53,30 @@ class City {
         this.plans = this.plans.filter((plan) => !plan.planId.equals(planId));
         this.planCount--;
         return this.save();
+    }
+
+    filterPlans(sort, season, cost, numPeople) {
+        db.collection('cities')
+            .find({
+                plans: {
+                    $elemMatch: {
+                        season: season ? season : { $exists: true },
+                        cost: { $lt: cost ? cost : 10000000000 },
+                        numPeople: numPeople ? numPeople : { $exists: true },
+                    },
+                },
+            })
+            .sort(sort === 'likes' ? { likes: 1 } : { date: 1 });
+    }
+
+    static getCityById(id) {
+        const db = getDb();
+        return db.collection('cities').findOne({ _id: new mongodb.ObjectId(id) });
+    }
+
+    static getcityByName(name) {
+        const db = getDb();
+        return db.collection('cities').findOne({ name: name });
     }
 }
 

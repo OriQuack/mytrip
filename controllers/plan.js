@@ -3,6 +3,7 @@ const mongodb = require('mongodb');
 const Plan = require('../models/plan');
 const User = require('../models/user');
 const City = require('../models/city');
+const { log } = require('console');
 
 exports.getIndex = (req, res, next) => {
     res.send('<h1>Main</h1>');
@@ -152,6 +153,19 @@ exports.deletePlan = (req, res, next) => {
                 .catch((err) => {
                     return res.status(500).json({ message: 'Interner server error' });
                 });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: 'Interner server error' });
+        });
+};
+
+exports.getPlanByCity = (req, res, next) => {
+    const city = City.getcityByName(req.params.city);
+    const { sort, season, cost, num } = req.query;
+    city.filterPlan(sort, season, cost, num)
+        .then((planList) => {
+            return res.status(200).json({ planList });
         })
         .catch((err) => {
             console.log(err);

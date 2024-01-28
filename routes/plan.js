@@ -17,4 +17,6 @@ router.get('/shared-trip/:code', planController.getSharedPlan);
 
 router.delete('/delete', authenticate, planController.deletePlan);
 
+router.get('/post/:city', planController.getPlanByCity);
+
 module.exports = router;
