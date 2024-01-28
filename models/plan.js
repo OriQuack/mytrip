@@ -23,6 +23,7 @@ class Plan {
         isPublic,
         hashtag = [],
         schedule = [],
+        destinationCart = [],
     }) {
         this._id = _id ? _id : null; // ObjectId
         this.name = name;
@@ -42,6 +43,7 @@ class Plan {
         this.isPublic = isPublic;
         this.hashtag = hashtag ? hashtag : null;
         this.schedule = schedule;
+        this.destinationCart = destinationCart;
     }
 
     save() {

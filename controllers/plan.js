@@ -34,6 +34,7 @@ exports.postAddPlan = (req, res, next) => {
         isPublic: req.body.isPublic,
         hashtag: req.body.hashtag,
         schedule: req.body.schedule,
+        destinationCart: req.body.destinationCart,
     });
     // Plan에 plan 추가/변경
     plan.save()
