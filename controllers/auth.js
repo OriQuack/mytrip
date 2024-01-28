@@ -55,9 +55,15 @@ exports.postSignup = (req, res, next) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-    if(User.getUserByEmail(email))
-        return res.status(500).json({message: "user already exists!"});
-    
+    User.getUserByEmail(email)
+        .then((user) => {
+            if (user) {
+                return res.status(409).json({ message: 'User already exists' });
+            }
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Interner server error' });
+        });
     bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
@@ -82,11 +88,9 @@ exports.postSignup = (req, res, next) => {
         })
         .catch((err) => {
             console.log(err);
-            return res.status(500);
+            return res.status(500).json({ message: 'Interner server error' });
         });
 };
-
-exports.getReset = (req, res, next) => {};
 
 exports.postReset = (req, res, next) => {
     //비밀번호 리셋시 , 토큰이 담긴 링크를 이메일로 전송, 디비의 유저콜렉션에 토큰 저장
@@ -106,8 +110,8 @@ exports.postReset = (req, res, next) => {
         User.getUserByEmail(req.body.email)
             .then((user) => {
                 if (!user) {
-                    
-                    return res.send({
+                    return res.status(404).json({
+                        message: 'User not found',
                         isSend: false,
                     });
                 }
@@ -130,12 +134,14 @@ exports.postReset = (req, res, next) => {
                     })
                     .catch((err) => {
                         console.log(err);
-                        return res.status(500).json({ message: 'Interner server error' });
+                        return res
+                            .status(500)
+                            .json({ message: 'Interner server error', isSend: false });
                     });
             })
             .catch((err) => {
                 console.log(err);
-                return res.status(400).json({ message: 'Bad request' });
+                return res.status(400).json({ message: 'Bad request', isSend: false });
             });
     });
 };
@@ -152,8 +158,15 @@ exports.postNewPassword = (req, res, next) => {
             if (user) {
                 const updatingUser = new User(user);
                 bcrypt.hash(newPassword, 12).then((password) => {
-                    updatingUser.updatePassword(password);
-                    return res.status(200).json({ message: 'Success' });
+                    updatingUser
+                        .updatePassword(password)
+                        .then((result) => {
+                            return res.status(200).json({ message: 'Updated' });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            return res.status(500).json({ message: 'Interner server error' });
+                        });
                 });
             } else {
                 return res.status(404).json({ message: 'Invalid token' });
