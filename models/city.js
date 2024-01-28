@@ -57,20 +57,22 @@ class City {
     }
 
     filterPlans(sort, season, cost, numPeople) {
-        const db = getDb();
-        return db
-            .collection('cities')
-            .find({
-                plans: {
-                    $elemMatch: {
-                        season: season ? season : { $exists: true },
-                        cost: { $lt: cost ? cost : 10000000000 },
-                        numPeople: numPeople ? numPeople : { $exists: true },
-                    },
-                },
-            })
-            .sort(sort === 'likes' ? { likes: -1 } : { dateAdded: 1 })
-            .limit(10);
+        const planList = this.plans.filter((plan) => {
+            return (
+                (!season || plan.season == season) &&
+                (!cost || plan.totalCost <= cost) &&
+                (!numPeople || plan.numPeople == numPeople)
+            );
+        });
+        planList.sort((a, b) => {
+            const planA = sort == 'likes' ? a.likes : a.dateAdded;
+            const planB = sort == 'likes' ? b.likes : b.dateAdded;
+            if (planA < planB) {
+                return sort == 'likes' ? 1 : -1;
+            }
+            return sort == 'likes' ? -1 : 1;
+        });
+        return planList;
     }
 
     static getCityById(id) {

@@ -33,7 +33,6 @@ class User {
         const db = getDb();
         if (this._id) {
             // User exists -> update user
-            console.log('user exists');
             return db.collection('users').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('users').insertOne(this);

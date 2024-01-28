@@ -21,6 +21,7 @@ exports.postAddPlan = (req, res, next) => {
         ownerId: req.user._id,
         city: req.body.city,
         date: req.body.date,
+        dateAdded: new Date().toISOString().split('T')[0].replace(/-/g, '.'),
         period: req.body.period,
         season: req.body.season,
         totalCost: req.body.totalCost,
@@ -168,8 +169,8 @@ exports.getPlanByCity = (req, res, next) => {
             }
             city = new City(city);
             const { sort, season, cost, num } = req.query;
-            const planList = city.filterPlans(sort, season, cost, num);
-            return res.status(200).json(planList);
+            const filteredPlans = city.filterPlans(sort, season, cost, num);
+            return res.status(200).json(filteredPlans);
         })
         .catch((err) => {
             console.log(err);
