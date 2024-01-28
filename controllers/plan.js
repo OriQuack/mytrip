@@ -171,7 +171,7 @@ exports.getPlanByCity = (req, res, next) => {
             city = new City(city);
             const { sort, season, cost, num } = req.query;
             const filteredPlans = city.filterPlans(sort, season, cost, num);
-            return res.status(200).json(filteredPlans);
+            return res.status(200).json({ plans: filteredPlans });
         })
         .catch((err) => {
             console.log(err);
