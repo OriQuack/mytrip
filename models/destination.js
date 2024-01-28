@@ -36,6 +36,7 @@ class Destination {
         }
         return db.collection('Destination').updateOne(filter, update, { upsert: true });
     }
+
     static getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
@@ -54,8 +55,10 @@ class Destination {
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
     }
+
     static getDestinationByName(name) {
         //여행지 검색시
         const db = getDb();
@@ -69,14 +72,12 @@ class Destination {
             ])
             .toArray()
             .then((destination) => {
-                
                 return destination;
-                
             })
             .catch((err) => {
                 console.log(err);
+                throw new Error(err);
             });
     }
-    
 }
 module.exports = Destination;
