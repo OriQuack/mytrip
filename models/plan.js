@@ -69,6 +69,16 @@ class Plan {
         const db = getDb();
         return db.collection('plans').findOne({ _id: new mongodb.ObjectId(id) });
     }
+
+    static getAllSortedByDate() {
+        const db = getDb();
+        return db.collection('plans').find().sort({ dateAdded: 1 }).toArray();
+    }
+
+    static getAllSortedByLikes() {
+        const db = getDb();
+        return db.collection('plans').find().sort({ likes: -1 }).toArray();
+    }
 }
 
 module.exports = Plan;
