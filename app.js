@@ -17,6 +17,7 @@ const planRoutes = require('./routes/plan');
 const refreshRoute = require('./routes/refreshToken');
 const destRoutes = require('./routes/destination');
 const OauthRoutes = require('./routes/Oauth');
+const communityRoutes = require('./routes/community');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
@@ -24,8 +25,9 @@ app.use(corsOptions);
 
 app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
-app.use('/Oauth',OauthRoutes);
-app.use('/destination',destRoutes);
+app.use('/Oauth', OauthRoutes);
+app.use('/destination', destRoutes);
+app.use('/community', communityRoutes);
 app.use(refreshRoute);
 
 mongoConnect(() => {
