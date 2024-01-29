@@ -26,7 +26,7 @@ app.use(corsOptions);
 app.use('/auth', authRoutes);
 app.use('/planning', planRoutes);
 app.use('/Oauth', OauthRoutes);
-app.use('/destination', destRoutes);
+app.use('/planning', destRoutes);
 app.use('/community', communityRoutes);
 app.use(refreshRoute);
 
