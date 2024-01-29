@@ -36,7 +36,19 @@ class Destination {
         }
         return db.collection('Destination').updateOne(filter, update, { upsert: true });
     }
-
+    static getRegion(_region) {
+        const db= getDb();
+        
+        return db.collection('Destination')
+        .findOne({"도":_region})
+        .then(destinations=> {
+            console.log(destinations);
+            return destinations;
+        })
+        .catch(err=> {
+            console.log(err);
+        })
+    }
     static getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
