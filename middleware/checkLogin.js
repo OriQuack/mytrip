@@ -34,7 +34,7 @@ const checkLogin = (req, res, next) => {
                     complete: true,
                     algorithms: ['HS256'],
                     clockTolerance: 0,
-                    ignoreExpiration: true,
+                    ignoreExpiration: true, // 보호해야 하는 route가 아니기 때문에 AT는 expiration 확인 안함
                     ignoreNotBefore: false,
                 },
                 (err, accessDecoded) => {
