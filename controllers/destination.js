@@ -1,7 +1,7 @@
 const Destination = require('../models/destination');
 
 exports.getDestByCity = (req, res, next) => {
-    const _si = req.body._si;
+    const _si = req.params.region;
 
     console.log('ok');
     Destination.getDestinations(_si)
@@ -15,7 +15,7 @@ exports.getDestByCity = (req, res, next) => {
 };
 
 exports.getDestination = (req, res, next) => {
-    const name = req.body.name;
+    const name = req.params.destination;
     Destination.getDestinationByName(name)
         .then((destination) => {
             if (destination) {
