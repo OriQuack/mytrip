@@ -46,7 +46,7 @@ exports.postAddPlan = (req, res, next) => {
                 return res.status(500).json({ message: 'Interner server error' });
             });
             // City에 plan 추가/변경
-            City.getcityByName(req.body.city)
+            City.getCityByName(req.body.city)
                 .then((city) => {
                     if (!city) {
                         return res.status(404).json({ message: 'City not found' });
@@ -132,7 +132,7 @@ exports.deletePlan = (req, res, next) => {
             // User에 plan 삭제
             req.user.removePlan(new mongodb.ObjectId(planId));
             // City에 plan 삭제
-            City.getcityByName(plan.city)
+            City.getCityByName(plan.city)
                 .then((city) => {
                     if (!city) {
                         return res.status(404).json({ message: 'City not found' });
@@ -163,7 +163,7 @@ exports.deletePlan = (req, res, next) => {
 };
 
 exports.getPlanByCity = (req, res, next) => {
-    City.getcityByName(req.params.city)
+    City.getCityByName(req.params.city)
         .then((city) => {
             if (!city) {
                 return res.status(404).json({ message: 'City not found' });
