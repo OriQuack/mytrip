@@ -49,26 +49,30 @@ class Destination {
             console.log(err);
         })
     }
-    static getDestinations(_si) {
+    static async getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
-        return db
-            .collection('Destination')
-            .aggregate([
+        var cityExists = await db.collection('Destination').findOne({"지역.도시":_si})
+        console.log(cityExists);
+        if(cityExists){
+            //console.log(cityExists);
+            return cityExists;
+        }
+        else{
+            console.log("여행지 또는 도시 없음");
+            var destinationExists = await db.collection('Destination').aggregate([
                 { $unwind: '$지역' },
-                { $match: { '지역.도시': _si } },
                 { $unwind: '$지역.여행지' },
+                { $match: { '지역.여행지.이름': _si } },
                 { $project: { '지역.여행지': 1, _id: 0 } },
             ])
-            .toArray()
-            .then((destinations) => {
-                console.log(destinations[0]);
-                return destinations;
-            })
-            .catch((err) => {
-                console.log(err);
-                throw new Error(err);
-            });
+            .toArray();
+            
+            if(destinationExists)
+                return destinationExists;
+          
+        }
+
     }
 
     static getDestinationByName(name) {
