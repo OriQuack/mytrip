@@ -52,10 +52,15 @@ class Destination {
     static async getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
-        var cityExists = await db.collection('Destination').findOne({"지역.도시":_si})
-        console.log(cityExists);
+        var cityExists = await db.collection('Destination')
+        .aggregate([
+            {$unwind: '$지역'},
+            {$match: {'지역.도시':_si}},
+            {$project: { '지역.여행지': 1, _id: 0 }}
+        ])
+        .toArray();
+        
         if(cityExists){
-            //console.log(cityExists);
             return cityExists;
         }
         else{
