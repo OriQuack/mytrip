@@ -52,6 +52,10 @@ class Destination {
     static async getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
+        var regionExists = await db.collection('Destination').findOne({"도":{$regex: _si}});
+        console.log(regionExists);
+        if(regionExists!=null)
+            return regionExists;
         var cityExists = await db.collection('Destination')
         .aggregate([
             {$unwind: '$지역'},
