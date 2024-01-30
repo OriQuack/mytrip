@@ -59,8 +59,8 @@ class Destination {
             {$project: { '지역.여행지': 1, _id: 0 }}
         ])
         .toArray();
-        
-        if(cityExists){
+        console.log(cityExists.length);
+        if(cityExists.length >0 ){
             return cityExists;
         }
         else{
