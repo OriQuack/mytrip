@@ -80,7 +80,7 @@ class City {
         return db.collection('cities').findOne({ _id: new mongodb.ObjectId(id) });
     }
 
-    static getcityByName(name) {
+    static getCityByName(name) {
         const db = getDb();
         return db.collection('cities').findOne({ name: name });
     }
