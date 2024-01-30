@@ -14,8 +14,7 @@ exports.getRegion = (req,res,next) => {
 
 exports.getDestByCity = (req, res, next) => {
 const _si = req.params.region;
-console.log(_si);
-console.log('ok');
+
 Destination.getDestinations(_si)
     .then((destinationList) => {
         if (destinationList) return res.status(200).json({ destinationList: destinationList });
