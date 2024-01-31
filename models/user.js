@@ -128,7 +128,7 @@ class User {
             totalCost: planData.totalCost,
             isPublic: planData.isPublic,
         };
-        this.scrapPlans.push(planSummary);
+        this.scrapPlans.unshift(planSummary);
         return this.save();
     }
 
@@ -161,7 +161,7 @@ class User {
             this.myPlans[existingPlanIndex] = planSummary;
         } else {
             //추가
-            this.myPlans.push(planSummary);
+            this.myPlans.unshift(planSummary);
         }
         return this.save();
     }
