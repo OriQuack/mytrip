@@ -11,7 +11,7 @@ const checkLogin = (req, res, next) => {
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음
-        next();
+        return next();
     }
     jwt.verify(
         refreshToken,
@@ -26,7 +26,7 @@ const checkLogin = (req, res, next) => {
         (err, refreshDecoded) => {
             if (err) {
                 // RT invalid or expired
-                next();
+                return next();
             }
             // RT valid
             jwt.verify(
@@ -42,15 +42,15 @@ const checkLogin = (req, res, next) => {
                 (err, accessDecoded) => {
                     if (err) {
                         // AT invalid
-                        next();
+                        return next();
                     }
                     // AT valid
                     User.getUserByUsername(accessDecoded.payload.username).then((user) => {
                         if (!user) {
-                            next();
+                            return next();
                         }
                         req.user = new User(user);
-                        next();
+                        return next();
                     });
                 }
             );
