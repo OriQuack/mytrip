@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
+const bcrypt = require('bcryptjs');
 
-const Plan = require('../models/plan');
-const User = require('../models/user');
+const generateToken = require('../util/generateToken');
 
 exports.getProfile = (req, res, next) => {
     return res.status(200).json({

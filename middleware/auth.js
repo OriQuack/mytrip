@@ -6,7 +6,9 @@ const generateToken = require('../util/generateToken');
 const authenticate = (req, res, next) => {
     // AT RT 확인해서 route를 보호
     // 정상적으로 확인된 유저를 req.user에 저장
-    const accessToken = req.headers['authorization'].split(' ')[1];
+    const accessToken = req.headers['authorization']
+        ? req.headers['authorization'].split(' ')[1]
+        : null;
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음
@@ -56,12 +58,10 @@ const authenticate = (req, res, next) => {
                             (err, refreshDecoded) => {
                                 if (err) {
                                     // AT expired && RT invalid or expired
-                                    return res
-                                        .status(403)
-                                        .json({
-                                            message:
-                                                'Authentication required: AT expired and RT invalid or expired',
-                                        });
+                                    return res.status(403).json({
+                                        message:
+                                            'Authentication required: AT expired and RT invalid or expired',
+                                    });
                                 }
                                 // AT expired && RT valid -> AT 재발급
                                 const newAccessToken = generateToken.genAccessToken(

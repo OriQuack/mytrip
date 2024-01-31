@@ -5,7 +5,9 @@ const User = require('../models/user');
 const checkLogin = (req, res, next) => {
     // AT RT 확인해서 login 했으면 req.user에 유저를 저장
     // login 하지 않았으면 req.user는 undefined
-    const accessToken = req.headers['authorization'].split(' ')[1];
+    const accessToken = req.headers['authorization']
+        ? req.headers['authorization'].split(' ')[1]
+        : null;
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음
