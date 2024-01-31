@@ -49,26 +49,52 @@ class Destination {
             console.log(err);
         })
     }
-    static getDestinations(_si) {
+    static async getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
-        return db
-            .collection('Destination')
-            .aggregate([
+        var regionExists = await db.collection('Destination').findOne({"도":{$regex: _si}});
+        
+        if(regionExists!=null)
+            return regionExists;
+            //{$regix: _si}
+      
+        var cityExists = await db.collection('Destination')
+        .aggregate([
+            {   $unwind: '$지역'    },
+            {   $match: 
+                {
+                    $or:[
+                            {'지역.도시': {$regex: _si}}
+                        ]
+                }
+            },
+            {$project: { '지역.여행지': 1, _id: 0 }}
+        ])
+        .toArray();
+       
+        if(cityExists.length >0 ){
+            return cityExists;
+        }
+        else{
+           
+            var destinationExists = await db.collection('Destination').aggregate([
                 { $unwind: '$지역' },
-                { $match: { '지역.도시': _si } },
                 { $unwind: '$지역.여행지' },
+                { $match:  {
+                                $or:[
+                                        {'지역.여행지.이름': {$regex: _si}}
+                                    ]
+                            } 
+                },
                 { $project: { '지역.여행지': 1, _id: 0 } },
             ])
-            .toArray()
-            .then((destinations) => {
-                console.log(destinations[0]);
-                return destinations;
-            })
-            .catch((err) => {
-                console.log(err);
-                throw new Error(err);
-            });
+            .toArray();
+            
+            if(destinationExists)
+                return destinationExists;
+          
+        }
+
     }
 
     static getDestinationByName(name) {
