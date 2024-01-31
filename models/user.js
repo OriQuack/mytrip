@@ -122,7 +122,10 @@ class User {
             city: planData.city,
             date: planData.date,
             likes: planData.likes,
-            scraps: planData.scraps,
+            season: planData.season,
+            period: planData.period,
+            numPeople: planData.numPeople,
+            totalCost: planData.totalCost,
             isPublic: planData.isPublic,
         };
         this.scrapPlans.push(planSummary);
@@ -144,10 +147,8 @@ class User {
             city: planData.city,
             date: planData.date,
             likes: planData.likes,
-            scraps: planData.scraps,
             image: planData.image,
             isPublic: planData.isPublic,
-            hashtag: planData.hashtag,
         };
 
         // myPlans에서 동일한 planId를 가진 요소 찾기

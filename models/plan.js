@@ -21,7 +21,6 @@ class Plan {
         shareUri,
         description,
         isPublic,
-        hashtag = [],
         schedule = [],
         destinationCart = [],
     }) {
@@ -41,7 +40,6 @@ class Plan {
         this.shareUri = shareUri ? shareUri : null;
         this.description = description ? description : null;
         this.isPublic = isPublic;
-        this.hashtag = hashtag ? hashtag : null;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
     }
