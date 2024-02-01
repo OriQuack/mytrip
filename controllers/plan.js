@@ -3,6 +3,7 @@ const mongodb = require('mongodb');
 const Plan = require('../models/plan');
 const User = require('../models/user');
 const City = require('../models/city');
+const encrypt = require('../util/encrypt');
 const { log } = require('console');
 
 exports.getIndex = (req, res, next) => {
@@ -83,9 +84,11 @@ exports.getShareUri = (req, res, next) => {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             if (plan.shareUri) {
-                return res.status(200).json({ uri: shareUri });
+                return res.status(200).json({ uri: plan.shareUri });
             }
-            const shareUri = 'http://localhost:5173/shared-trip/' + btoa(planId);
+            const shareUri =
+                'http://localhost:5173/shared-trip/' +
+                encrypt.encryptData(planId, process.env.SHAREURI_SECRET);
             const updatingPlan = new Plan(plan);
             updatingPlan
                 .setShareUri(shareUri)
@@ -104,7 +107,7 @@ exports.getShareUri = (req, res, next) => {
 };
 
 exports.getSharedPlan = (req, res, next) => {
-    const planId = atob(req.params.code);
+    const planId = encrypt.decryptData(req.params.code, process.env.SHAREURI_SECRET);
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
@@ -166,12 +169,11 @@ exports.getPlanByCity = (req, res, next) => {
     const { sort, season, cost, num } = req.query;
 
     Plan.filterPlans(city, sort, season, cost, num)
-        .then(filteredPlans => {
+        .then((filteredPlans) => {
             res.status(200).json({ plans: filteredPlans });
         })
-        .catch(err => {
+        .catch((err) => {
             console.error(err);
             res.status(500).json({ message: 'Internal server error' });
         });
 };
-
