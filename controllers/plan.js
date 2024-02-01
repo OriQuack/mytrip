@@ -163,18 +163,16 @@ exports.deletePlan = (req, res, next) => {
 };
 
 exports.getPlanByCity = (req, res, next) => {
-    City.getCityByName(req.params.city)
-        .then((city) => {
-            if (!city) {
-                return res.status(404).json({ message: 'City not found' });
-            }
-            city = new City(city);
-            const { sort, season, cost, num } = req.query;
-            const filteredPlans = city.filterPlans(sort, season, cost, num);
-            return res.status(200).json({ plans: filteredPlans });
+    const city = req.params.city;
+    const { sort, season, cost, num } = req.query;
+
+    Plan.filterPlans(city, sort, season, cost, num)
+        .then(filteredPlans => {
+            res.status(200).json({ plans: filteredPlans });
         })
-        .catch((err) => {
-            console.log(err);
-            return res.status(500).json({ message: 'Interner server error' });
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: 'Internal server error' });
         });
 };
+

@@ -79,6 +79,21 @@ class Plan {
         const db = getDb();
         return db.collection('plans').find().sort({ likes: -1 }).toArray();
     }
+
+    static filterPlans(city, sort, season, cost, numPeople) {
+        const db = getDb();
+        let query = { city: city };
+        if (season) query.season = season;
+        if (cost) query.totalCost = { $lte: cost };
+        if (numPeople) query.numPeople = numPeople;
+
+        let sortQuery = { dateAdded: -1 };
+        if (sort == "likes") {
+            sortQuery = { likes: -1 };
+        }
+
+        return db.collection('plans').find(query).sort(sortQuery).toArray();
+    }
 }
 
 module.exports = Plan;
