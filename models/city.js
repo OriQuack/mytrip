@@ -32,7 +32,6 @@ class City {
             isPublic: planData.isPublic,
             totalCost: planData.totalCost,
             numPeople: planData.numPeople,
-            hashtag: planData.hashtag,
         };
         // plans에서 동일한 planId를 가진 요소 찾기
         const existingPlanIndex = this.plans.findIndex(

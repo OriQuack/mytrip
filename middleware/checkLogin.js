@@ -5,11 +5,13 @@ const User = require('../models/user');
 const checkLogin = (req, res, next) => {
     // AT RT 확인해서 login 했으면 req.user에 유저를 저장
     // login 하지 않았으면 req.user는 undefined
-    const accessToken = req.headers['authorization'].split(' ')[1];
+    const accessToken = req.headers['authorization']
+        ? req.headers['authorization'].split(' ')[1]
+        : null;
     const refreshToken = req.cookies['refreshToken'];
     if (!accessToken || !refreshToken) {
         // AT나 RT가 없음
-        next();
+        return next();
     }
     jwt.verify(
         refreshToken,
@@ -24,7 +26,7 @@ const checkLogin = (req, res, next) => {
         (err, refreshDecoded) => {
             if (err) {
                 // RT invalid or expired
-                next();
+                return next();
             }
             // RT valid
             jwt.verify(
@@ -40,15 +42,15 @@ const checkLogin = (req, res, next) => {
                 (err, accessDecoded) => {
                     if (err) {
                         // AT invalid
-                        next();
+                        return next();
                     }
                     // AT valid
                     User.getUserByUsername(accessDecoded.payload.username).then((user) => {
                         if (!user) {
-                            next();
+                            return next();
                         }
                         req.user = new User(user);
-                        next();
+                        return next();
                     });
                 }
             );
