@@ -39,7 +39,7 @@ class Plan {
         this.image = image;
         this.shareUri = shareUri ? shareUri : null;
         this.description = description ? description : null;
-        this.isPublic = isPublic;
+        this.isPublic = isPublic ? isPublic : false;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
     }
@@ -86,7 +86,7 @@ class Plan {
         if (numPeople) query.numPeople = numPeople;
 
         let sortQuery = { dateAdded: -1 };
-        if (sort == "likes") {
+        if (sort == 'likes') {
             sortQuery = { likes: -1 };
         }
 
