@@ -78,12 +78,13 @@ class Plan {
         return db.collection('plans').find().sort({ likes: -1 }).toArray();
     }
 
-    static filterPlans(city, sort, season, cost, numPeople) {
+    static filterPlans(city, sort, season, cost, numPeople, period) {
         const db = getDb();
         let query = { city: city };
         if (season) query.season = season;
         if (cost) query.totalCost = { $lte: cost };
         if (numPeople) query.numPeople = numPeople;
+        if (period) query.period = period;
 
         let sortQuery = { dateAdded: -1 };
         if (sort == 'likes') {

@@ -166,9 +166,9 @@ exports.deletePlan = (req, res, next) => {
 
 exports.getPlanByCity = (req, res, next) => {
     const city = req.params.city;
-    const { sort, season, cost, num } = req.query;
+    const { sort, season, cost, num, period } = req.query;
 
-    Plan.filterPlans(city, sort, season, cost, num)
+    Plan.filterPlans(city, sort, season, cost, num, period)
         .then((filteredPlans) => {
             res.status(200).json({ plans: filteredPlans });
         })
