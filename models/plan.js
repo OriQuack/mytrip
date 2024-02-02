@@ -21,6 +21,7 @@ class Plan {
         shareUri,
         description,
         isPublic,
+        isDone,
         schedule = [],
         destinationCart = [],
     }) {
