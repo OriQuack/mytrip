@@ -2,7 +2,6 @@ const mongodb = require('mongodb');
 
 const Plan = require('../models/plan');
 const User = require('../models/user');
-const City = require('../models/city');
 const encrypt = require('../util/encrypt');
 const { log } = require('console');
 
@@ -41,26 +40,10 @@ exports.postAddPlan = (req, res, next) => {
         .then((result) => {
             const planId = update ? plan._id : result.insertedId;
             // User에 plan 추가/변경
-            req.user.savePlan(plan).catch((err) => {
-                console.log(err);
-                return res.status(500).json({ message: 'Interner server error' });
-            });
-            // City에 plan 추가/변경
-            City.getCityByName(req.body.city)
-                .then((city) => {
-                    if (!city) {
-                        return res.status(404).json({ message: 'City not found' });
-                    }
-                    const updatingCity = new City(city);
-                    updatingCity
-                        .addPlan(plan)
-                        .then((result) => {
-                            return res.status(update ? 201 : 200).json({ planId: planId });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            return res.status(500).json({ message: 'Interner server error' });
-                        });
+            req.user
+                .savePlan(plan)
+                .then((result) => {
+                    return res.status(update ? 201 : 200).json({ planId: planId });
                 })
                 .catch((err) => {
                     console.log(err);
@@ -133,20 +116,6 @@ exports.deletePlan = (req, res, next) => {
             }
             // User에 plan 삭제
             req.user.removePlan(new mongodb.ObjectId(planId));
-            // City에 plan 삭제
-            City.getCityByName(plan.city)
-                .then((city) => {
-                    if (!city) {
-                        return res.status(404).json({ message: 'City not found' });
-                    }
-                    const updatingCity = new City(city);
-                    updatingCity.removePlan(new mongodb.ObjectId(planId)).catch((err) => {
-                        return res.status(500).json({ message: 'Interner server error' });
-                    });
-                })
-                .catch((err) => {
-                    return res.status(500).json({ message: 'Interner server error' });
-                });
             // Plan에 plan 삭제
             const updatingPlan = new Plan(plan);
             updatingPlan
