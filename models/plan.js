@@ -82,14 +82,16 @@ class Plan {
         const db = getDb();
         let query = { city: city };
         if (season) query.season = season;
-        if (cost) query.totalCost = { $lte: cost };
-        if (numPeople) query.numPeople = numPeople;
-        if (period) query.period = period;
+        if (cost) query.totalCost = { $lte: Number(cost) };
+        if (numPeople) query.numPeople = Number(numPeople);
+        if (period) query.period = Number(period);
 
         let sortQuery = { dateAdded: -1 };
         if (sort == 'likes') {
             sortQuery = { likes: -1 };
         }
+        console.log(query);
+        console.log(sortQuery);
 
         return db.collection('plans').find(query).sort(sortQuery).toArray();
     }
