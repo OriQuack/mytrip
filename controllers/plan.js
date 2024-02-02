@@ -32,6 +32,7 @@ exports.postAddPlan = (req, res, next) => {
         shareUri: req.body.shareUri,
         description: req.body.description,
         isPublic: req.body.isPublic,
+        isDone: req.body.isDone,
         schedule: req.body.schedule,
         destinationCart: req.body.destinationCart,
     });

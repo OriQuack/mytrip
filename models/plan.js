@@ -40,6 +40,7 @@ class Plan {
         this.shareUri = shareUri ? shareUri : null;
         this.description = description ? description : null;
         this.isPublic = isPublic ? isPublic : false;
+        this.isDone = isDone;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
     }
@@ -80,7 +81,7 @@ class Plan {
 
     static filterPlans(city, sort, season, cost, numPeople, period) {
         const db = getDb();
-        let query = { city: city, isPublic: true };
+        let query = { city: city, isPublic: true, isDone: true };
         if (season) query.season = season;
         if (cost) query.totalCost = { $lte: Number(cost) };
         if (numPeople) query.numPeople = Number(numPeople);
