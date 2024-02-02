@@ -80,7 +80,7 @@ class Plan {
 
     static filterPlans(city, sort, season, cost, numPeople, period) {
         const db = getDb();
-        let query = { city: city };
+        let query = { city: city, isPublic: true };
         if (season) query.season = season;
         if (cost) query.totalCost = { $lte: Number(cost) };
         if (numPeople) query.numPeople = Number(numPeople);
@@ -90,8 +90,6 @@ class Plan {
         if (sort == 'likes') {
             sortQuery = { likes: -1 };
         }
-        console.log(query);
-        console.log(sortQuery);
 
         return db.collection('plans').find(query).sort(sortQuery).toArray();
     }
