@@ -345,8 +345,8 @@ exports.postKakaoAuth = async (req, res, next) => {
         });
 
         const accessToken = tokenResponse.data.access_token;
-        console.log('token successfully received');
-        console.log(accessToken);
+        //console.log('token successfully received');
+        //console.log(accessToken);
 
         //사용자 정보 받아오기
         const userInfoResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
@@ -354,15 +354,15 @@ exports.postKakaoAuth = async (req, res, next) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log('User information successfully received');
-        console.log(userInfoResponse.data.id);
+        //console.log('User information successfully received');
+        //console.log(userInfoResponse.data.id);
 
         const kakaoId = userInfoResponse.data.id;
         const email = userInfoResponse.data.kakao_account.email;
         User.getUserByKakaoId(kakaoId).then((user) => {
             if (!user) {
                 //Signup
-                console.log('Kakao sign up');
+                //console.log('Kakao sign up');
                 const username =
                     generator.generate({
                         length: 8,
@@ -408,7 +408,7 @@ exports.postKakaoAuth = async (req, res, next) => {
                     });
             } else {
                 //Login
-                console.log('kakao login');
+                //console.log('kakao login');
                 const accessToken = generateToken.genAccessToken(user.username);
                 const refreshToken = generateToken.genRefreshToken();
                 return res
