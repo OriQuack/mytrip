@@ -52,6 +52,7 @@ class Destination {
     static async getDestinations(_si) {
         //시 검색시 여행지 목록
         const db = getDb();
+        console.time();
         var regionExists = await db.collection('Destination').findOne({"도":{$regex: _si}});
         
         if(regionExists!=null)
@@ -89,14 +90,20 @@ class Destination {
                 { $project: { '지역.여행지': 1, _id: 0 } },
             ])
             .toArray();
-            
+            console.timeEnd();
+            //console.log(destinationExists);
             if(destinationExists)
                 return destinationExists;
           
         }
 
     }
-
+   static async getDestinations_2(name) {
+    const db = getDb();
+    const des= db.collection('destination_2').find({'addr1':{$regex:name}}).toArray();
+    
+    return des;
+   }
     static getDestinationByName(name) {
         //여행지 검색시
         const db = getDb();
