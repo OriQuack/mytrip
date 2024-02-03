@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('node:crypto');
-const env = require('dotenv');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const axios = require('axios');
@@ -8,8 +7,7 @@ const generator = require('generate-password');
 
 const User = require('../models/user');
 const generateToken = require('../util/generateToken');
-
-const jwt = require('jsonwebtoken');
+const encrypt = require('../util/encrypt');
 
 //전송 생성 메서드 호출
 const transporter = nodemailer.createTransport(
@@ -103,10 +101,7 @@ exports.postReset = (req, res, next) => {
         }
         const token = buffer.toString('hex');
         const resetTokenExpiration = Date.now() + 3600000;
-        const cipher = crypto.createCipher('aes-256-cbc', process.env.PASSWORD_TOKEN_SECRET);
-        let encryptedToken = cipher.update(token, 'utf8', 'hex');
-        encryptedToken += cipher.final('hex');
-
+        const encryptedToken = encrypt.encryptData(token, process.env.PASSWORD_TOKEN_SECRET);
         User.getUserByEmail(req.body.email)
             .then((user) => {
                 if (!user) {
@@ -149,9 +144,7 @@ exports.postReset = (req, res, next) => {
 exports.postNewPassword = (req, res, next) => {
     const newPassword = req.body.password;
     const token = req.body.passwordToken;
-    const cipher = crypto.createCipher('aes-256-cbc', process.env.PASSWORD_TOKEN_SECRET);
-    let encryptedToken = cipher.update(token, 'utf8', 'hex');
-    encryptedToken += cipher.final('hex');
+    const encryptedToken = encrypt.encryptData(token, process.env.PASSWORD_TOKEN_SECRET);
 
     User.getUserByToken({ resetToken: encryptedToken })
         .then((user) => {

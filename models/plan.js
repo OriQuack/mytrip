@@ -21,6 +21,7 @@ class Plan {
         shareUri,
         description,
         isPublic,
+        isDone,
         schedule = [],
         destinationCart = [],
     }) {
@@ -39,7 +40,8 @@ class Plan {
         this.image = image;
         this.shareUri = shareUri ? shareUri : null;
         this.description = description ? description : null;
-        this.isPublic = isPublic;
+        this.isPublic = isPublic ? isPublic : false;
+        this.isDone = isDone;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
     }
@@ -76,6 +78,22 @@ class Plan {
     static getAllSortedByLikes() {
         const db = getDb();
         return db.collection('plans').find().sort({ likes: -1 }).toArray();
+    }
+
+    static filterPlans(city, sort, season, cost, numPeople, period) {
+        const db = getDb();
+        let query = { city: city, isPublic: true, isDone: true };
+        if (season) query.season = season;
+        if (cost) query.totalCost = { $lte: Number(cost) };
+        if (numPeople) query.numPeople = Number(numPeople);
+        if (period) query.period = Number(period);
+
+        let sortQuery = { dateAdded: -1 };
+        if (sort == 'likes') {
+            sortQuery = { likes: -1 };
+        }
+
+        return db.collection('plans').find(query).sort(sortQuery).toArray();
     }
 }
 

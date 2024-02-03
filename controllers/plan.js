@@ -2,7 +2,7 @@ const mongodb = require('mongodb');
 
 const Plan = require('../models/plan');
 const User = require('../models/user');
-const City = require('../models/city');
+const encrypt = require('../util/encrypt');
 const { log } = require('console');
 
 exports.getIndex = (req, res, next) => {
@@ -32,6 +32,7 @@ exports.postAddPlan = (req, res, next) => {
         shareUri: req.body.shareUri,
         description: req.body.description,
         isPublic: req.body.isPublic,
+        isDone: req.body.isDone,
         schedule: req.body.schedule,
         destinationCart: req.body.destinationCart,
     });
@@ -40,26 +41,10 @@ exports.postAddPlan = (req, res, next) => {
         .then((result) => {
             const planId = update ? plan._id : result.insertedId;
             // User에 plan 추가/변경
-            req.user.savePlan(plan).catch((err) => {
-                console.log(err);
-                return res.status(500).json({ message: 'Interner server error' });
-            });
-            // City에 plan 추가/변경
-            City.getCityByName(req.body.city)
-                .then((city) => {
-                    if (!city) {
-                        return res.status(404).json({ message: 'City not found' });
-                    }
-                    const updatingCity = new City(city);
-                    updatingCity
-                        .addPlan(plan)
-                        .then((result) => {
-                            return res.status(update ? 201 : 200).json({ planId: planId });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            return res.status(500).json({ message: 'Interner server error' });
-                        });
+            req.user
+                .savePlan(plan)
+                .then((result) => {
+                    return res.status(update ? 201 : 200).json({ planId: planId });
                 })
                 .catch((err) => {
                     console.log(err);
@@ -83,9 +68,11 @@ exports.getShareUri = (req, res, next) => {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             if (plan.shareUri) {
-                return res.status(200).json({ uri: shareUri });
+                return res.status(200).json({ uri: plan.shareUri });
             }
-            const shareUri = 'http://localhost:5173/shared-trip/' + btoa(planId);
+            const shareUri =
+                'http://localhost:5173/shared-trip/' +
+                encrypt.encryptData(planId, process.env.SHAREURI_SECRET);
             const updatingPlan = new Plan(plan);
             updatingPlan
                 .setShareUri(shareUri)
@@ -104,7 +91,7 @@ exports.getShareUri = (req, res, next) => {
 };
 
 exports.getSharedPlan = (req, res, next) => {
-    const planId = atob(req.params.code);
+    const planId = encrypt.decryptData(req.params.code, process.env.SHAREURI_SECRET);
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
@@ -130,20 +117,6 @@ exports.deletePlan = (req, res, next) => {
             }
             // User에 plan 삭제
             req.user.removePlan(new mongodb.ObjectId(planId));
-            // City에 plan 삭제
-            City.getCityByName(plan.city)
-                .then((city) => {
-                    if (!city) {
-                        return res.status(404).json({ message: 'City not found' });
-                    }
-                    const updatingCity = new City(city);
-                    updatingCity.removePlan(new mongodb.ObjectId(planId)).catch((err) => {
-                        return res.status(500).json({ message: 'Interner server error' });
-                    });
-                })
-                .catch((err) => {
-                    return res.status(500).json({ message: 'Interner server error' });
-                });
             // Plan에 plan 삭제
             const updatingPlan = new Plan(plan);
             updatingPlan
@@ -162,18 +135,15 @@ exports.deletePlan = (req, res, next) => {
 };
 
 exports.getPlanByCity = (req, res, next) => {
-    City.getCityByName(req.params.city)
-        .then((city) => {
-            if (!city) {
-                return res.status(404).json({ message: 'City not found' });
-            }
-            city = new City(city);
-            const { sort, season, cost, num } = req.query;
-            const filteredPlans = city.filterPlans(sort, season, cost, num);
-            return res.status(200).json({ plans: filteredPlans });
+    const city = req.params.city;
+    const { sort, season, cost, num, period } = req.query;
+
+    Plan.filterPlans(city, sort, season, cost, num, period)
+        .then((filteredPlans) => {
+            res.status(200).json({ plans: filteredPlans });
         })
         .catch((err) => {
-            console.log(err);
-            return res.status(500).json({ message: 'Interner server error' });
+            console.error(err);
+            res.status(500).json({ message: 'Internal server error' });
         });
 };
