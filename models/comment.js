@@ -19,7 +19,7 @@ class Comment {
     save() {
         const db = getDb();
         if (this._id) {
-            // Comment exists -> update city
+            // Comment exists -> update comment 
             return db.collection('comments').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('comments').insertOne(this);

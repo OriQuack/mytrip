@@ -122,6 +122,7 @@ class User {
             city: planData.city,
             date: planData.date,
             likes: planData.likes,
+            image: planData.image,
             season: planData.season,
             period: planData.period,
             numPeople: planData.numPeople,
@@ -148,6 +149,7 @@ class User {
             date: planData.date,
             likes: planData.likes,
             image: planData.image,
+            isDone: planData.isDone,
             isPublic: planData.isPublic,
         };
 
