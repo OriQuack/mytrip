@@ -71,9 +71,6 @@ exports.postLikeClick = (req, res, next) => {
     // (1) 존재하지 않으면, req.user의 likedPlans에 추가하고, 해당 plan의 like 수 증가시키기
     // (2) 존재하면, req.user의 likedPlans에서 삭제하고, 해당 plan의 like 수 감소시키기
 
-    if (!req.user) {
-        return res.status(401).send('User not authenticated');
-    }
     const planId = new mongodb.ObjectId(req.params.postId);
     const isLiked = req.user.likedPlans.some(id => id.equals(planId));
 
@@ -109,12 +106,8 @@ exports.postLikeClick = (req, res, next) => {
 
 
 exports.postScrapClick = (req, res, next) => {
-    if (!req.user) {
-        return res.status(401).send('User not authenticated');
-    }
     const planId = new mongodb.ObjectId(req.params.postId);
     const isScraped = req.user.scrapPlans.some(scrapPlan => scrapPlan.planId.equals(planId));
-
 
     Plan.getPlanById(planId)
         .then(planData => {
@@ -145,3 +138,11 @@ exports.postScrapClick = (req, res, next) => {
             res.status(500).send('Internal Server Error');
         });
 };
+
+exports.postAddComment = (req, res, next) => {
+    
+}
+
+exports.deleteComment = (req, res, next) => {
+
+}
