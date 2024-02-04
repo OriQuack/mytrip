@@ -98,8 +98,8 @@ class Plan {
             .collection('plans')
             .find(query)
             .sort(sortQuery)
-            // .skip(pageSkip - 1)
-            // .limit(8)
+            .skip(pageSkip - 1)
+            .limit(8)
             .toArray();
     }
 }
