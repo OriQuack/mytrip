@@ -5,6 +5,17 @@ const User = require('../models/user');
 exports.getAllPosts = (req, res, next) => { //기본적으로는 최신순
     Plan.getAllSortedByDate()
         .then(posts => {
+            if (req.user) { // 로그인한 상태이면 각 게시물에 대해 좋아요, 스크랩 여부 확인
+                posts = posts.map(post => {
+                    const isLiked = req.user.likedPlans.some(id => id.equals(post._id));
+                    const isScraped = req.user.scrapPlans.some(scrapPlan => scrapPlan.planId.equals(post._id));
+                    return {
+                        ...post,
+                        isLiked: isLiked,
+                        isScraped: isScraped
+                    };
+                });
+            }
             return res.status(200).json({
                 posts: posts
             });
@@ -29,11 +40,22 @@ exports.getAllPostsByLikes = (req, res, next) => { //좋아요순
 };
 
 exports.getPostById = (req, res, next) => {
-    const postId = req.params.postId;
+    let isLiked = false;
+    let isScraped = false;
+    const postId = new mongodb.ObjectId(req.params.postId); // postId를 ObjectId로 변환
     Plan.getPlanById(postId)
         .then(post => {
+            if (!post) {
+                return res.status(404).json({ message: 'Plan not found' });
+            }
+            if (req.user) { // 로그인한 상태이면 좋아요, 스크랩 여부 확인
+                isLiked = req.user.likedPlans.some(id => id.equals(postId));
+                isScraped = req.user.scrapPlans.some(scrapPlan => scrapPlan.planId.equals(postId));
+            }
             return res.status(200).json({
-                post: post
+                post: post,
+                isLiked: isLiked, // 좋아요 여부 추가
+                isScraped: isScraped // 스크랩 여부 추가
             });
         })
         .catch(err => {
