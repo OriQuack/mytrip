@@ -4,9 +4,9 @@ const planController = require('../controllers/plan');
 const checkLogin = require('../middleware/checkLogin');
 const router = express.Router();
 
-router.get('/', checkLogin, communityController.getAllPosts);
+router.get('/', checkLogin, communityController.getAllPostsByLikes);
 
-router.get('/likes', checkLogin, communityController.getAllPostsByLikes);
+router.get('/recent', checkLogin, communityController.getAllPosts);
 
 router.get('/:postId', checkLogin, communityController.getPostById);
 
