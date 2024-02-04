@@ -80,7 +80,7 @@ class Plan {
         return db.collection('plans').find().sort({ likes: -1 }).toArray();
     }
 
-    static filterPlans(city, sort, season, cost, numPeople, period) {
+    static filterPlans(city, sort, season, cost, numPeople, period, page) {
         const db = getDb();
         let query = { city: city, isPublic: true, isDone: true };
         if (season) query.season = season;
@@ -92,8 +92,15 @@ class Plan {
         if (sort == 'likes') {
             sortQuery = { likes: -1 };
         }
+        const pageSkip = page ? page : 1;
 
-        return db.collection('plans').find(query).sort(sortQuery).toArray();
+        return db
+            .collection('plans')
+            .find(query)
+            .sort(sortQuery)
+            // .skip(pageSkip - 1)
+            // .limit(8)
+            .toArray();
     }
 }
 
