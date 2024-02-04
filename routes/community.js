@@ -12,4 +12,8 @@ router.get('/:postId', checkLogin, communityController.getPostById);
 
 router.get('/post/:city', planController.getPlanByCity);
 
+router.post('/like/:postId', checkLogin, communityController.postLikeClick);
+
+router.post('/scrap/:postId', checkLogin, communityController.postScrapClick);
+
 module.exports = router;
