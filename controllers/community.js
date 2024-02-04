@@ -1,7 +1,6 @@
 const mongodb = require('mongodb');
 const Plan = require('../models/plan');
 const User = require('../models/user');
-const City = require('../models/city');
 
 exports.getAllPosts = (req, res, next) => { //기본적으로는 최신순
     Plan.getAllSortedByDate()
