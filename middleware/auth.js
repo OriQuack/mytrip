@@ -70,7 +70,7 @@ const authenticate = (req, res, next) => {
                                 return res
                                     .status(403)
                                     .cookie('refreshToken', refreshToken, {
-                                        expires: new Date(Date.now() + 259200),
+                                        expires: new Date(Date.now() + 259200000),
                                         httpOnly: true,
                                     })
                                     .header('Authorization', newAccessToken)
