@@ -12,9 +12,6 @@ class Comment {
 
     save() {
         const db = getDb();
-        // if (this._id) {
-        //     return db.collection('comments').updateOne({ _id: this._id }, { $set: this });
-        // }
         return db.collection('comments').insertOne(this);
     }
 
@@ -30,7 +27,7 @@ class Comment {
 
     static getCommentsByPlan(planId) {
         const db = getDb();
-        return db.collection('comments').find({planId: planId}).
+        return db.collection('comments').find({ planId: planId }).toArray();
     }
 }
 

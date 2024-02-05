@@ -183,7 +183,7 @@ exports.postAddComment = (req, res, next) => {
 };
 
 exports.deleteComment = (req, res, next) => {
-    const planId = req.params.postId;
+    const planId = new mongodb.ObjectId(req.params.postId);
     const commentId = new mongodb.ObjectId(req.body.commentId);
     Plan.getPlanById(planId)
         .then((plan) => {

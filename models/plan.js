@@ -62,7 +62,7 @@ class Plan {
 
     deletePlan() {
         const db = getDb();
-        return db.collection('plans').deleteOne({ _id: new mongodb.ObjectId(this._id) });
+        return db.collection('plans').deleteOne({ _id: this._id });
     }
 
     addComment(commentId) {
@@ -79,7 +79,7 @@ class Plan {
 
     static getPlanById(id) {
         const db = getDb();
-        return db.collection('plans').findOne({ _id: new mongodb.ObjectId(id) });
+        return db.collection('plans').findOne({ _id: id });
     }
 
     static getAllSortedByDate() {
