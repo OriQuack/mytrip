@@ -24,6 +24,7 @@ class Plan {
         isDone,
         schedule = [],
         destinationCart = [],
+        comments = [],
     }) {
         this._id = _id ? _id : null; // ObjectId
         this.name = name;
@@ -44,6 +45,7 @@ class Plan {
         this.isDone = isDone;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
+        this.comments = comments;
     }
 
     save() {
@@ -63,6 +65,12 @@ class Plan {
     deletePlan() {
         const db = getDb();
         return db.collection('plans').deleteOne({ _id: new mongodb.ObjectId(this._id) });
+    }
+
+    addComment(commentId) {
+        const db = getDb();
+        this.comments.unshift(commentId);
+        return this.save()
     }
 
     static getPlanById(id) {
