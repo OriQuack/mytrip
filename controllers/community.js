@@ -56,7 +56,7 @@ exports.getPostById = (req, res, next) => {
             }
             // Post가 public인지 확인
             if (!post.isPublic || !post.isDone) {
-                if (!req.user || req.user._id.toString() != post.ownerId.toString()) {
+                if (!req.user || req.user._id.toString() !== post.ownerId.toString()) {
                     return res.status(403).json({ message: 'Unauthorized' });
                 }
             }
@@ -67,11 +67,19 @@ exports.getPostById = (req, res, next) => {
                     scrapPlan.planId.equals(postId)
                 );
             }
-            return res.status(200).json({
-                post: post,
-                isLiked: isLiked, // 좋아요 여부 추가
-                isScraped: isScraped, // 스크랩 여부 추가
-            });
+            Comment.getCommentsByPlan(postId)
+                .then((comments) => {
+                    return res.status(200).json({
+                        post: post,
+                        comments: comments,
+                        isLiked: isLiked, // 좋아요 여부 추가
+                        isScraped: isScraped, // 스크랩 여부 추가
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res.status(500).json({ message: 'Internal server error' });
+                });
         })
         .catch((err) => {
             console.error(err);
@@ -158,14 +166,14 @@ exports.postScrapClick = (req, res, next) => {
 };
 
 exports.postAddComment = (req, res, next) => {
-    const planId = req.params.postId;
+    const planId = new mongodb.ObjectId(req.params.postId);
     const content = req.body.content;
     const dateObject = new Date();
     const date = dateObject.toISOString().split('T')[0].replace(/-/g, '.');
     const time = dateObject.getHours() + ':' + dateObject.getMinutes();
     const comment = new Comment({
         _id: null,
-        planId: new mongodb.ObjectId(planId),
+        planId: planId,
         userId: req.user._id,
         content: content,
         date: date + ' ' + time,
@@ -188,15 +196,28 @@ exports.deleteComment = (req, res, next) => {
     Plan.getPlanById(planId)
         .then((plan) => {
             // comments collection에서 comment 삭제
-            Comment.getCommentById(commentId).then((comment) => {
-                if (comment.userId.toString() != req.user._id.toString()) {
-                    return res.status(403).json({ message: 'Unauthorized' });
-                }
-                const updatingComment = new Comment(comment);
-                updatingComment.deleteComment().then((result) => {
-                    return res.status(200).json({ message: 'Successfully deleted' });
+            Comment.getCommentById(commentId)
+                .then((comment) => {
+                    if (!comment) {
+                        return res.status(404).json({ message: 'Comment not found' });
+                    }
+                    // 유저 확인
+                    if (comment.userId.toString() != req.user._id.toString()) {
+                        return res.status(403).json({ message: 'Unauthorized' });
+                    }
+                    const updatingComment = new Comment(comment);
+                    updatingComment
+                        .deleteComment()
+                        .then((result) => {
+                            return res.status(200).json({ message: 'Successfully deleted' });
+                        })
+                        .catch((err) => {
+                            return res.status(500).json({ message: 'Internal server error' });
+                        });
+                })
+                .catch((err) => {
+                    return res.status(500).json({ message: 'Internal server error' });
                 });
-            });
         })
         .catch((err) => {
             return res.status(500).json({ message: 'Internal server error' });

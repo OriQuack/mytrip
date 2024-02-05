@@ -2,7 +2,7 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Comment {
-    constructor({ _id, userId, content, date }) {
+    constructor({ _id, planId, userId, content, date }) {
         this._id = _id ? _id : null;
         this.planId = planId;
         this.userId = userId;
@@ -17,12 +17,12 @@ class Comment {
 
     deleteComment() {
         const db = getDb();
-        return db.collection('comments').deleteOne({ _id: new mongodb.ObjectId(this._id) });
+        return db.collection('comments').deleteOne({ _id: this._id });
     }
 
     static getCommentById(id) {
         const db = getDb();
-        return db.collection('comments').findOne({ _id: new mongodb.ObjectId(id) });
+        return db.collection('comments').findOne({ _id: id });
     }
 
     static getCommentsByPlan(planId) {
