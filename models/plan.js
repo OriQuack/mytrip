@@ -62,22 +62,42 @@ class Plan {
 
     deletePlan() {
         const db = getDb();
-        return db.collection('plans').deleteOne({ _id: new mongodb.ObjectId(this._id) });
+        return db.collection('plans').deleteOne({ _id: this._id });
+    }
+
+    addComment(commentId) {
+        const db = getDb();
+        this.comments.unshift(commentId);
+        return this.save();
+    }
+
+    deleteComment(commentId) {
+        const db = getDb();
+        this.comments = this.comments.filter((id) => !id.equals(commentId));
+        return this.save();
     }
 
     static getPlanById(id) {
         const db = getDb();
-        return db.collection('plans').findOne({ _id: new mongodb.ObjectId(id) });
+        return db.collection('plans').findOne({ _id: id });
     }
 
     static getAllSortedByDate() {
         const db = getDb();
-        return db.collection('plans').find().sort({ dateAdded: 1 }).toArray();
+        return db
+            .collection('plans')
+            .find({ isPublic: true, isDone: true })
+            .sort({ dateAdded: 1 })
+            .toArray();
     }
 
     static getAllSortedByLikes() {
         const db = getDb();
-        return db.collection('plans').find().sort({ likes: -1 }).toArray();
+        return db
+            .collection('plans')
+            .find({ isPublic: true, isDone: true })
+            .sort({ likes: -1 })
+            .toArray();
     }
 
     static filterPlans(city, sort, season, cost, numPeople, period, page) {

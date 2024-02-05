@@ -28,7 +28,7 @@ exports.postAddPlan = (req, res, next) => {
         numPeople: req.body.numPeople,
         likes: req.body.likes,
         scraps: req.body.scraps,
-        image: req.body.image, 
+        image: req.body.image,
         shareUri: req.body.shareUri,
         description: req.body.description,
         isPublic: req.body.isPublic,
@@ -58,7 +58,7 @@ exports.postAddPlan = (req, res, next) => {
 };
 
 exports.getShareUri = (req, res, next) => {
-    const planId = req.body.planId;
+    const planId = new mongodb.ObjectId(req.body.planId);
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
@@ -91,7 +91,9 @@ exports.getShareUri = (req, res, next) => {
 };
 
 exports.getSharedPlan = (req, res, next) => {
-    const planId = encrypt.decryptData(req.params.code, process.env.SHAREURI_SECRET);
+    const planId = new mongodb.ObjectId(
+        encrypt.decryptData(req.params.code, process.env.SHAREURI_SECRET)
+    );
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
@@ -106,7 +108,7 @@ exports.getSharedPlan = (req, res, next) => {
 };
 
 exports.deletePlan = (req, res, next) => {
-    const planId = req.body.planId;
+    const planId = new mongodb.ObjectId(req.body.planId);
     Plan.getPlanById(planId)
         .then((plan) => {
             if (!plan) {
@@ -116,13 +118,19 @@ exports.deletePlan = (req, res, next) => {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             // User에 plan 삭제
-            req.user.removePlan(new mongodb.ObjectId(planId));
-            // Plan에 plan 삭제
-            const updatingPlan = new Plan(plan);
-            updatingPlan
-                .deletePlan()
-                .then((result) => {
-                    return res.status(200).json({ message: 'Successfully deleted' });
+            req.user
+                .removePlan(planId)
+                .then(() => {
+                    // Plan에 plan 삭제
+                    const updatingPlan = new Plan(plan);
+                    updatingPlan
+                        .deletePlan()
+                        .then((result) => {
+                            return res.status(200).json({ message: 'Successfully deleted' });
+                        })
+                        .catch((err) => {
+                            return res.status(500).json({ message: 'Interner server error' });
+                        });
                 })
                 .catch((err) => {
                     return res.status(500).json({ message: 'Interner server error' });
