@@ -4,6 +4,7 @@ const getDb = require('../util/database').getDb;
 class Comment {
     constructor({ _id, userId, content, date }) {
         this._id = _id ? _id : null;
+        this.planId = planId;
         this.userId = userId;
         this.content = content; // "멋져요"
         this.date = date; //"2024.01.26 12:56"
@@ -25,6 +26,11 @@ class Comment {
     static getCommentById(id) {
         const db = getDb();
         return db.collection('comments').findOne({ _id: new mongodb.ObjectId(id) });
+    }
+
+    static getCommentsByPlan(planId) {
+        const db = getDb();
+        return db.collection('comments').find({planId: planId}).
     }
 }
 

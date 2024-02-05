@@ -13,9 +13,9 @@ router.get('/:postId', checkLogin, communityController.getPostById);
 
 router.get('/post/:city', planController.getPlanByCity);
 
-router.post('/like/:postId', authenticate, communityController.postLikeClick);
+router.post('/:postId/like', authenticate, communityController.postLikeClick);
 
-router.post('/scrap/:postId', authenticate, communityController.postScrapClick);
+router.post('/:postId/scrap', authenticate, communityController.postScrapClick);
 
 router.post('/:postId/comment/add', authenticate, communityController.postAddComment);
 

@@ -54,6 +54,12 @@ exports.getPostById = (req, res, next) => {
             if (!post) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
+            // Post가 public인지 확인
+            if (!post.isPublic || !post.isDone) {
+                if (!req.user || req.user._id.toString() != post.ownerId.toString()) {
+                    return res.status(403).json({ message: 'Unauthorized' });
+                }
+            }
             if (req.user) {
                 // 로그인한 상태이면 좋아요, 스크랩 여부 확인
                 isLiked = req.user.likedPlans.some((id) => id.equals(postId));
@@ -159,6 +165,7 @@ exports.postAddComment = (req, res, next) => {
     const time = dateObject.getHours() + ':' + dateObject.getMinutes();
     const comment = new Comment({
         _id: null,
+        planId: new mongodb.ObjectId(planId),
         userId: req.user._id,
         content: content,
         date: date + ' ' + time,
@@ -167,13 +174,7 @@ exports.postAddComment = (req, res, next) => {
     comment
         .save()
         .then((result) => {
-            Plan.getPlanById(planId).then((plan) => {
-                // plan에 commentId 추가
-                const updatingPlan = new Plan(plan);
-                updatingPlan.addComment(result.insertedId).then((result) => {
-                    return res.status(201).json({ message: 'Comment created' });
-                });
-            });
+            return res.status(201).json({ commentId: result.insertedId });
         })
         .catch((err) => {
             console.log(err);
@@ -191,9 +192,6 @@ exports.deleteComment = (req, res, next) => {
                 if (comment.userId.toString() != req.user._id.toString()) {
                     return res.status(403).json({ message: 'Unauthorized' });
                 }
-                // plan에서 commentId 삭제
-                const updatingPlan = new Plan(plan);
-                updatingPlan.deleteComment(commentId);
                 const updatingComment = new Comment(comment);
                 updatingComment.deleteComment().then((result) => {
                     return res.status(200).json({ message: 'Successfully deleted' });

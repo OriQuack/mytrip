@@ -24,7 +24,6 @@ class Plan {
         isDone,
         schedule = [],
         destinationCart = [],
-        comments = [],
     }) {
         this._id = _id ? _id : null; // ObjectId
         this.name = name;
@@ -45,7 +44,6 @@ class Plan {
         this.isDone = isDone;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
-        this.comments = comments; // Array of String
     }
 
     save() {
@@ -70,12 +68,12 @@ class Plan {
     addComment(commentId) {
         const db = getDb();
         this.comments.unshift(commentId);
-        return this.save()
+        return this.save();
     }
 
     deleteComment(commentId) {
         const db = getDb();
-        this.comments = this.comments.filter((id)  => !id.equals(commentId));
+        this.comments = this.comments.filter((id) => !id.equals(commentId));
         return this.save();
     }
 
@@ -86,12 +84,20 @@ class Plan {
 
     static getAllSortedByDate() {
         const db = getDb();
-        return db.collection('plans').find().sort({ dateAdded: 1 }).toArray();
+        return db
+            .collection('plans')
+            .find({ isPublic: true, isDone: true })
+            .sort({ dateAdded: 1 })
+            .toArray();
     }
 
     static getAllSortedByLikes() {
         const db = getDb();
-        return db.collection('plans').find().sort({ likes: -1 }).toArray();
+        return db
+            .collection('plans')
+            .find({ isPublic: true, isDone: true })
+            .sort({ likes: -1 })
+            .toArray();
     }
 
     static filterPlans(city, sort, season, cost, numPeople, period, page) {
