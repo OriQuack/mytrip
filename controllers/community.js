@@ -202,7 +202,7 @@ exports.deleteComment = (req, res, next) => {
                         return res.status(404).json({ message: 'Comment not found' });
                     }
                     // 유저 확인
-                    if (comment.userId.toString() != req.user._id.toString()) {
+                    if (comment.userId.toString() !== req.user._id.toString()) {
                         return res.status(403).json({ message: 'Unauthorized' });
                     }
                     const updatingComment = new Comment(comment);
@@ -220,6 +220,24 @@ exports.deleteComment = (req, res, next) => {
                 });
         })
         .catch((err) => {
+            return res.status(500).json({ message: 'Internal server error' });
+        });
+};
+
+exports.getUserPosts = (req, res, next) => {
+    const username = req.params.username;
+    User.getUserByUsername(username)
+        .then((user) => {
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            const posts = user.myPlans.filter((plan) => {
+                return plan.isPublic && plan.isDone;
+            });
+            return res.status(200).json({ posts: posts });
+        })
+        .catch((err) => {
+            console.log(err);
             return res.status(500).json({ message: 'Internal server error' });
         });
 };

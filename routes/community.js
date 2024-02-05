@@ -13,6 +13,8 @@ router.get('/:postId', checkLogin, communityController.getPostById);
 
 router.get('/post/:city', planController.getPlanByCity);
 
+router.get('/posts/:username', communityController.getUserPosts);
+
 router.post('/:postId/like', authenticate, communityController.postLikeClick);
 
 router.post('/:postId/scrap', authenticate, communityController.postScrapClick);
