@@ -28,7 +28,7 @@ exports.postAddPlan = (req, res, next) => {
         numPeople: req.body.numPeople,
         likes: req.body.likes,
         scraps: req.body.scraps,
-        image: req.body.imageUrl,
+        image: req.body.image,
         shareUri: req.body.shareUri,
         description: req.body.description,
         isPublic: req.body.isPublic,
