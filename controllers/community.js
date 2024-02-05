@@ -178,4 +178,18 @@ exports.postAddComment = (req, res, next) => {
         });
 };
 
-exports.deleteComment = (req, res, next) => {};
+exports.deleteComment = (req, res, next) => {
+    const planId = req.body.planId;
+    const commentId = mongodb.ObjectId(req.body.commentId);
+    Plan.getPostById(planId)
+        .then((plan) => {
+            plan.deleteComment(commentId).then((result) => {
+                Comment.deleteComment(commentId).then((result) => {
+                    return res.status(200).json({ message: 'Successfully deleted' });
+                });
+            });
+        })
+        .catch((err) => {
+            return res.status(500).json({ message: 'Internal server error' });
+        });
+};

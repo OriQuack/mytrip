@@ -45,7 +45,7 @@ class Plan {
         this.isDone = isDone;
         this.schedule = schedule;
         this.destinationCart = destinationCart;
-        this.comments = comments;
+        this.comments = comments; // Array of String
     }
 
     save() {
@@ -71,6 +71,12 @@ class Plan {
         const db = getDb();
         this.comments.unshift(commentId);
         return this.save()
+    }
+
+    deleteComment(commentId) {
+        const db = getDb();
+        this.comments = this.comments.filter((id)  => !id.equals(commentId));
+        return this.save();
     }
 
     static getPlanById(id) {

@@ -17,7 +17,7 @@ class Comment {
         return db.collection('comments').insertOne(this);
     }
 
-    removeComment(id) {
+    static deleteComment(id) {
         const db = getDb();
         return db.collection('comments').deleteOne({ _id: new mongodb.ObjectId(this._id) });
     }
