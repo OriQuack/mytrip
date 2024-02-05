@@ -152,7 +152,7 @@ exports.postScrapClick = (req, res, next) => {
 };
 
 exports.postAddComment = (req, res, next) => {
-    const planId = req.body.planId;
+    const planId = req.params.postId;
     const content = req.body.content;
     const dateObject = new Date();
     const date = dateObject.toISOString().split('T')[0].replace(/-/g, '.');
@@ -161,13 +161,16 @@ exports.postAddComment = (req, res, next) => {
         _id: null,
         userId: req.user._id,
         content: content,
-        date: date + time,
+        date: date + ' ' + time,
     });
+    // comments collection에 comment 추가
     comment
         .save()
         .then((result) => {
-            Plan.getPostById(planId).then((plan) => {
-                plan.addComment(result.insertedId).then((result) => {
+            Plan.getPlanById(planId).then((plan) => {
+                // plan에 commentId 추가
+                const updatingPlan = new Plan(plan);
+                updatingPlan.addComment(result.insertedId).then((result) => {
                     return res.status(201).json({ message: 'Comment created' });
                 });
             });
@@ -179,12 +182,20 @@ exports.postAddComment = (req, res, next) => {
 };
 
 exports.deleteComment = (req, res, next) => {
-    const planId = req.body.planId;
-    const commentId = mongodb.ObjectId(req.body.commentId);
-    Plan.getPostById(planId)
+    const planId = req.params.postId;
+    const commentId = new mongodb.ObjectId(req.body.commentId);
+    Plan.getPlanById(planId)
         .then((plan) => {
-            plan.deleteComment(commentId).then((result) => {
-                Comment.deleteComment(commentId).then((result) => {
+            // comments collection에서 comment 삭제
+            Comment.getCommentById(commentId).then((comment) => {
+                if (comment.userId.toString() != req.user._id.toString()) {
+                    return res.status(403).json({ message: 'Unauthorized' });
+                }
+                // plan에서 commentId 삭제
+                const updatingPlan = new Plan(plan);
+                updatingPlan.deleteComment(commentId);
+                const updatingComment = new Comment(comment);
+                updatingComment.deleteComment().then((result) => {
                     return res.status(200).json({ message: 'Successfully deleted' });
                 });
             });
