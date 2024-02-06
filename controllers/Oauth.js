@@ -64,6 +64,7 @@ exports.NaverLogin = async (req, res, next) => {
                         username: username,
                         email: email,
                         password: hashedPassword,
+                        snsLogin: 'naver',
                     });
                     newUser.save().then((result) => {
                         return res

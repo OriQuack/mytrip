@@ -269,6 +269,7 @@ exports.postGoogleLogin = (req, res) => {
                                         username: username,
                                         email: email,
                                         password: hashedPassword,
+                                        snsLogin: 'google',
                                     });
                                     newUser
                                         .save()
@@ -374,6 +375,7 @@ exports.postKakaoAuth = async (req, res, next) => {
                             username: username,
                             email: email,
                             password: hashedPassword,
+                            snsLogin: 'kakao',
                             kakaoId: kakaoId,
                         });
                         newUser

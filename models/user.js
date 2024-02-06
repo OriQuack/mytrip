@@ -10,6 +10,7 @@ class User {
         email,
         password,
         _id,
+        snsLogin,
         kakaoId,
         resetToken,
         resetTokenExpiration,
@@ -21,6 +22,7 @@ class User {
         this.email = email;
         this.password = password;
         this._id = _id ? _id : null; // ObjectId
+        this.snsLogin = snsLogin ? snsLogin : null,
         this.kakaoId = kakaoId ? kakaoId : null;
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;

@@ -8,6 +8,7 @@ exports.getProfile = (req, res, next) => {
         username: req.user.username,
         email: req.user.email,
         planCount: req.user.myPlans.length,
+        snsLogin: req.user.snsLogin,
     });
 };
 
