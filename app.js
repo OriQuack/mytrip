@@ -19,6 +19,7 @@ const destRoutes = require('./routes/destination');
 const OauthRoutes = require('./routes/Oauth');
 const communityRoutes = require('./routes/community');
 const myPageRoutes = require('./routes/myPage');
+const httpChallenge = require('./routes/httpChallenge');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
@@ -31,6 +32,7 @@ app.use('/planning', destRoutes);
 app.use('/community', communityRoutes);
 app.use('/my-page', myPageRoutes);
 app.use(refreshRoute);
+app.use(httpChallenge);
 
 mongoConnect(() => {
     http.createServer(app).listen(process.env.HTTP_PORT); // http 서버
