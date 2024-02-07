@@ -5,13 +5,9 @@ const checkLogin = require('../middleware/checkLogin');
 const authenticate = require('../middleware/auth');
 const router = express.Router();
 
-router.get('/', checkLogin, communityController.getAllPostsByLikes);
-
-router.get('/recent', checkLogin, communityController.getAllPosts);
+router.get('/', checkLogin, communityController.getAllPosts);
 
 router.get('/:postId', checkLogin, communityController.getPostById);
-
-router.get('/post/:city', planController.getPlanByCity);
 
 router.get('/posts/:username', communityController.getUserPosts);
 

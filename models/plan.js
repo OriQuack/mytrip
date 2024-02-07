@@ -82,45 +82,18 @@ class Plan {
         return db.collection('plans').findOne({ _id: id });
     }
 
-    static getAllSortedByDate() {
+    static filterPlans(city, sort, season, cost, numPeople, period) {
         const db = getDb();
-        return db
-            .collection('plans')
-            .find({ isPublic: true, isDone: true })
-            .sort({ dateAdded: 1 })
-            .toArray();
-    }
-
-    static getAllSortedByLikes() {
-        const db = getDb();
-        return db
-            .collection('plans')
-            .find({ isPublic: true, isDone: true })
-            .sort({ likes: -1 })
-            .toArray();
-    }
-
-    static filterPlans(city, sort, season, cost, numPeople, period, page) {
-        const db = getDb();
-        let query = { city: city, isPublic: true, isDone: true };
+        let query = { isPublic: true, isDone: true };
+        if (city) query.city = city;
         if (season) query.season = season;
         if (cost) query.totalCost = { $lte: Number(cost) };
         if (numPeople) query.numPeople = Number(numPeople);
         if (period) query.period = Number(period);
 
-        let sortQuery = { dateAdded: -1 };
-        if (sort == 'likes') {
-            sortQuery = { likes: -1 };
-        }
-        const pageSkip = page ? page : 1;
+        let sortQuery = sort == 'likes' ? { likes: -1 } : { dateAdded: -1 };
 
-        return db
-            .collection('plans')
-            .find(query)
-            .sort(sortQuery)
-            .skip(pageSkip - 1)
-            .limit(8)
-            .toArray();
+        return db.collection('plans').find(query).sort(sortQuery).toArray();
     }
 }
 
