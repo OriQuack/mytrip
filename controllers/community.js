@@ -4,66 +4,10 @@ const User = require('../models/user');
 const Comment = require('../models/comment');
 
 exports.getAllPosts = (req, res, next) => {
-    //기본적으로는 최신순
-    Plan.getAllSortedByDate()
-        .then((posts) => {
-            if (req.user) {
-                // 로그인한 상태이면 각 게시물에 대해 좋아요, 스크랩 여부 확인
-                posts = posts.map((post) => {
-                    const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
-                    const isScraped = req.user.scrapPlans.some((scrapPlan) =>
-                        scrapPlan.planId.equals(post._id)
-                    );
-                    return {
-                        ...post,
-                        isLiked: isLiked,
-                        isScraped: isScraped,
-                    };
-                });
-            }
-            return res.status(200).json({
-                posts: posts,
-            });
-        })
-        .catch((err) => {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error' });
-        });
-};
+    const { city, sort, season, cost, num, period } = req.query;
 
-exports.getAllPostsByLikes = (req, res, next) => {
-    //좋아요순
-    Plan.getAllSortedByLikes()
-        .then((posts) => {
-            if (req.user) {
-                // 로그인한 상태이면 각 게시물에 대해 좋아요, 스크랩 여부 확인
-                posts = posts.map((post) => {
-                    const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
-                    const isScraped = req.user.scrapPlans.some((scrapPlan) =>
-                        scrapPlan.planId.equals(post._id)
-                    );
-                    return {
-                        ...post,
-                        isLiked: isLiked,
-                        isScraped: isScraped,
-                    };
-                });
-            }
-            return res.status(200).json({
-                posts: posts,
-            });
-        })
-        .catch((err) => {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error' });
-        });
-};
-
-exports.getPlanByCity = (req, res, next) => {
-    const city = req.params.city;
-    const { sort, season, cost, num, period, page } = req.query;
-
-    Plan.filterPlans(city, sort, season, cost, num, period, page)
+    // 기본적으로 최신순
+    Plan.filterPlans(city, sort, season, cost, num, period)
         .then((posts) => {
             if (req.user) {
                 // 로그인한 상태이면 각 게시물에 대해 좋아요, 스크랩 여부 확인
