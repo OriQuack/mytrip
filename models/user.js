@@ -120,7 +120,7 @@ class User {
         const planSummary = {
             planId: planData._id,
             name: planData.name,
-            ownerId: planData.ownerId,
+            ownerUsername: planData.ownerUsername,
             city: planData.city,
             date: planData.date,
             likes: planData.likes,
@@ -146,7 +146,7 @@ class User {
         const planSummary = {
             planId: planData._id,
             name: planData.name,
-            ownerId: planData.ownerId,
+            ownerUsername: planData.ownerUsername,
             city: planData.city,
             date: planData.date,
             likes: planData.likes,

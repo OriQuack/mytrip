@@ -100,7 +100,7 @@ exports.getPostById = (req, res, next) => {
             }
             // Post가 public인지 확인
             if (!post.isPublic || !post.isDone) {
-                if (!req.user || req.user._id.toString() !== post.ownerId.toString()) {
+                if (!req.user || req.user.username !== post.ownerUsername) {
                     return res.status(403).json({ message: 'Unauthorized' });
                 }
             }

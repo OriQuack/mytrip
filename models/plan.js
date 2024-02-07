@@ -7,7 +7,7 @@ class Plan {
     constructor({
         _id,
         name,
-        ownerId,
+        ownerUsername,
         city,
         date,
         dateAdded,
@@ -27,7 +27,7 @@ class Plan {
     }) {
         this._id = _id ? _id : null; // ObjectId
         this.name = name;
-        this.ownerId = ownerId; // ObjectId
+        this.ownerUsername = ownerUsername; // ObjectId
         this.city = city;
         this.date = date;
         this.dateAdded = dateAdded;

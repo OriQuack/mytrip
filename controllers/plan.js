@@ -18,7 +18,7 @@ exports.postAddPlan = (req, res, next) => {
     const plan = new Plan({
         _id: update ? new mongodb.ObjectId(req.body._id) : null,
         name: req.body.name,
-        ownerId: req.user._id,
+        ownerUsername: req.user.username,
         city: req.body.city,
         date: req.body.date,
         dateAdded: new Date().toISOString().split('T')[0].replace(/-/g, '.'),
@@ -64,7 +64,7 @@ exports.getShareUri = (req, res, next) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
-            if (plan.ownerId.toString() !== req.user._id.toString()) {
+            if (plan.ownerUsername !== req.user.username) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             if (plan.shareUri) {
@@ -114,7 +114,7 @@ exports.deletePlan = (req, res, next) => {
             if (!plan) {
                 return res.status(404).json({ message: 'Plan not found' });
             }
-            if (plan.ownerId.toString() !== req.user._id.toString()) {
+            if (plan.ownerUsername !== req.user.username) {
                 return res.status(403).json({ message: 'Unauthorized' });
             }
             // User에 plan 삭제
