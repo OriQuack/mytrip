@@ -1,5 +1,5 @@
 const express = require('express');
-const fs = require('node:js');
+const fs = require('node:fs');
 
 const router = express.Router();
 
