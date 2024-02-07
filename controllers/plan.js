@@ -148,10 +148,10 @@ exports.getPlanByCity = (req, res, next) => {
 
     Plan.filterPlans(city, sort, season, cost, num, period, page)
         .then((filteredPlans) => {
-            res.status(200).json({ plans: filteredPlans });
+            return res.status(200).json({ plans: filteredPlans });
         })
         .catch((err) => {
             console.error(err);
-            res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({ message: 'Internal server error' });
         });
 };
