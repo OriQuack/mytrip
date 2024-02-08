@@ -170,7 +170,7 @@ exports.postAddComment = (req, res, next) => {
     comment
         .save()
         .then((result) => {
-            return res.status(201).json({ commentId: result.insertedId });
+            return res.status(201).json({ commentId: result.insertedId, username: req.user.username });
         })
         .catch((err) => {
             console.log(err);
