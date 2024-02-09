@@ -219,10 +219,26 @@ exports.getUserPosts = (req, res, next) => {
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-            const posts = user.myPlans.filter((plan) => {
+            let posts = user.myPlans.filter((plan) => {
                 return plan.isPublic && plan.isDone;
             });
-            return res.status(200).json({ posts: posts });
+            if (req.user) {
+                // 로그인한 상태이면 각 게시물에 대해 좋아요, 스크랩 여부 확인
+                posts = posts.map((post) => {
+                    const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
+                    const isScraped = req.user.scrapPlans.some((scrapPlan) =>
+                        scrapPlan.planId.equals(post._id)
+                    );
+                    return {
+                        ...post,
+                        isLiked: isLiked,
+                        isScraped: isScraped,
+                    };
+                });
+            }
+            return res.status(200).json({
+                posts: posts,
+            });
         })
         .catch((err) => {
             console.log(err);
