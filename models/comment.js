@@ -2,10 +2,10 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Comment {
-    constructor({ _id, planId, userId, content, date }) {
+    constructor({ _id, planId, username, content, date }) {
         this._id = _id ? _id : null;
         this.planId = planId;
-        this.userId = userId;
+        this.username = username;
         this.content = content; // "멋져요"
         this.date = date; //"2024.01.26 12:56"
     }
