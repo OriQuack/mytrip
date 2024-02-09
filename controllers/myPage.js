@@ -38,13 +38,29 @@ exports.postProfile = (req, res, next) => {
 };
 
 exports.getScraps = (req, res, next) => {
+    let posts = req.user.scrapPlans;
+    posts = posts.map((post) => {
+        const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
+        return {
+            ...post,
+            isLiked: isLiked,
+        };
+    });
     return res.status(200).json({
-        scrapPlans: req.user.scrapPlans,
+        scrapPlans: posts,
     });
 };
 
 exports.getPlans = (req, res, next) => {
+    let posts = req.user.myPlans;
+    posts = posts.map((post) => {
+        const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
+        return {
+            ...post,
+            isLiked: isLiked,
+        };
+    });
     return res.status(200).json({
-        myPlans: req.user.myPlans,
+        myPlans: posts,
     });
 };
