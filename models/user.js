@@ -22,8 +22,7 @@ class User {
         this.email = email;
         this.password = password;
         this._id = _id ? _id : null; // ObjectId
-        this.snsLogin = snsLogin ? snsLogin : null,
-        this.kakaoId = kakaoId ? kakaoId : null;
+        (this.snsLogin = snsLogin ? snsLogin : null), (this.kakaoId = kakaoId ? kakaoId : null);
         this.resetToken = resetToken ? resetToken : null;
         this.resetTokenExpiration = resetTokenExpiration ? resetTokenExpiration : null;
         this.likedPlans = likedPlans; //plan id의 배열
@@ -149,6 +148,9 @@ class User {
             ownerUsername: planData.ownerUsername,
             city: planData.city,
             date: planData.date,
+            period: planData.period,
+            numPeople: planData.numPeople,
+            totalCost: planData.numPeople,
             likes: planData.likes,
             image: planData.image,
             isDone: planData.isDone,

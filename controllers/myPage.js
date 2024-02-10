@@ -40,7 +40,7 @@ exports.postProfile = (req, res, next) => {
 exports.getScraps = (req, res, next) => {
     let posts = req.user.scrapPlans;
     posts = posts.map((post) => {
-        const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
+        const isLiked = req.user.likedPlans.some((id) => id.equals(post.planId));
         return {
             ...post,
             isLiked: isLiked,
@@ -54,7 +54,7 @@ exports.getScraps = (req, res, next) => {
 exports.getPlans = (req, res, next) => {
     let posts = req.user.myPlans;
     posts = posts.map((post) => {
-        const isLiked = req.user.likedPlans.some((id) => id.equals(post._id));
+        const isLiked = req.user.likedPlans.some((id) => id.equals(post.planId));
         return {
             ...post,
             isLiked: isLiked,
